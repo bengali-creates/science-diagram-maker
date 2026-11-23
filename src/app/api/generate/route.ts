@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { generateScienceDiagram } from "@/lib/gemini";
+import { getDiagramService } from "@/lib/services/diagram-service";
 import { GenerationRequest, Subject } from "@/types";
 
 export const maxDuration = 60; // Allow sufficient time for generation & retries
@@ -29,7 +29,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const executionLog = await generateScienceDiagram({
+    // Retrieve active diagram service (Native or LangGraph microservice)
+    const diagramService = getDiagramService();
+
+    const executionLog = await diagramService.generateDiagram({
       conceptId: body.conceptId,
       conceptName: body.conceptName,
       subject: body.subject,
@@ -40,6 +43,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
+      serviceUsed: diagramService.name,
       result: executionLog.result,
       apiRetries: executionLog.apiRetries,
       validationRetries: executionLog.validationRetries,

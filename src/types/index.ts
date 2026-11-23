@@ -28,6 +28,7 @@ export interface DiagramResult {
     hasTitleAndLabels: boolean;
     hasAnimation: boolean;
     customSemanticRichness: boolean;
+    noOverlappingLabels?: boolean;
   };
   checkDetails: ValidationCheck[];
   allChecksPassed: boolean;

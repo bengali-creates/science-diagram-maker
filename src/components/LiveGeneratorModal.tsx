@@ -7,13 +7,12 @@ import {
   CheckCircle2,
   Loader2,
   X,
-  ExternalLink,
-  ChevronRight,
-  Flame,
 } from "lucide-react";
-import { SCIENCE_CONCEPTS, DEFAULT_MODEL, FALLBACK_MODELS } from "@/lib/constants";
+import { SCIENCE_CONCEPTS, DEFAULT_MODEL } from "@/lib/constants";
 import { DiagramResult, Subject } from "@/types";
 import { formatCost } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 interface LiveGeneratorModalProps {
   isOpen: boolean;
@@ -100,24 +99,24 @@ export function LiveGeneratorModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-in fade-in duration-150">
-      <div className="relative flex flex-col h-[90vh] w-full max-w-3xl rounded-2xl border border-slate-800 bg-slate-950 shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-4 animate-in fade-in duration-150">
+      <div className="relative flex flex-col h-[90vh] w-full max-w-3xl rounded-2xl border border-border bg-card text-card-foreground shadow-2xl overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-800/80 px-6 py-4 bg-slate-900/50">
+        <div className="flex items-center justify-between border-b border-border px-6 py-4 bg-muted/40">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary border border-primary/20">
               <Sparkles className="h-4 w-4" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-slate-100">Live AI Diagram Generator</h2>
-              <p className="text-xs text-slate-400">
-                Executes Part A live: calls model, runs 5 checks in code, retries on failure
+              <h2 className="text-base font-bold text-foreground">Live AI Diagram Generator</h2>
+              <p className="text-xs text-muted-foreground">
+                Executes Part A live: calls model, runs 6 code checks, retries on failure
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-slate-100"
+            className="rounded-lg p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer"
           >
             <X className="h-4 w-4" />
           </button>
@@ -127,7 +126,7 @@ export function LiveGeneratorModal({
         <div className="flex-1 overflow-auto p-6 space-y-5">
           {/* Concept Selection Tabs */}
           <div>
-            <label className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2 block">
+            <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-2 block">
               Select UK GCSE Science Concept
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -139,61 +138,60 @@ export function LiveGeneratorModal({
                     setSelectedConceptId(concept.id);
                     setIsCustom(false);
                   }}
-                  className={`flex flex-col items-start p-2.5 rounded-xl border text-left text-xs transition-all ${
+                  className={`flex flex-col items-start p-2.5 rounded-xl border text-left text-xs transition-all cursor-pointer ${
                     !isCustom && selectedConceptId === concept.id
-                      ? "border-blue-500 bg-blue-500/10 text-slate-100 shadow-sm shadow-blue-500/20"
-                      : "border-slate-800 bg-slate-900/40 text-slate-400 hover:border-slate-700 hover:text-slate-200"
+                      ? "border-primary bg-primary/10 text-foreground shadow-sm ring-1 ring-primary/30"
+                      : "border-border bg-card hover:border-primary/50 text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  <span className="font-semibold">{concept.concept}</span>
-                  <span className="text-[10px] text-blue-400/90">{concept.subject}</span>
+                  <span className="font-bold">{concept.concept}</span>
+                  <span className="text-[10px] text-primary">{concept.subject}</span>
                 </button>
               ))}
 
               <button
                 type="button"
                 onClick={() => setIsCustom(true)}
-                className={`flex flex-col items-start p-2.5 rounded-xl border text-left text-xs transition-all ${
+                className={`flex flex-col items-start p-2.5 rounded-xl border text-left text-xs transition-all cursor-pointer ${
                   isCustom
-                    ? "border-blue-500 bg-blue-500/10 text-slate-100 shadow-sm shadow-blue-500/20"
-                    : "border-slate-800 bg-slate-900/40 text-slate-400 hover:border-slate-700 hover:text-slate-200"
+                    ? "border-primary bg-primary/10 text-foreground shadow-sm ring-1 ring-primary/30"
+                    : "border-border bg-card hover:border-primary/50 text-muted-foreground hover:text-foreground"
                 }`}
               >
-                <span className="font-semibold">+ Custom Prompt</span>
-                <span className="text-[10px] text-purple-400">Any Concept</span>
+                <span className="font-bold">+ Custom Prompt</span>
+                <span className="text-[10px] text-purple-500">Any Concept</span>
               </button>
             </div>
           </div>
 
           {/* Prompt Details */}
           {!isCustom ? (
-            <div className="rounded-xl border border-slate-800/80 bg-slate-900/40 p-3.5 space-y-1">
-              <span className="text-[11px] font-semibold text-slate-400">
+            <div className="rounded-xl border border-border bg-muted/40 p-3.5 space-y-1">
+              <span className="text-[11px] font-semibold text-muted-foreground">
                 Text sent to Gemini model:
               </span>
-              <p className="text-xs text-slate-200 italic font-serif leading-relaxed">
+              <p className="text-xs text-foreground italic font-serif leading-relaxed">
                 "{currentConcept?.promptText}"
               </p>
             </div>
           ) : (
-            <div className="space-y-3 rounded-xl border border-slate-800/80 bg-slate-900/40 p-4">
+            <div className="space-y-3 rounded-xl border border-border bg-muted/40 p-4">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-slate-400 mb-1 block">Diagram Title</label>
-                  <input
+                  <label className="text-xs text-muted-foreground mb-1 block">Diagram Title</label>
+                  <Input
                     type="text"
                     value={customTitle}
                     onChange={(e) => setCustomTitle(e.target.value)}
                     placeholder="e.g. Mitosis Cell Division"
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 px-3 py-1.5 text-xs text-slate-100 focus:border-blue-500 focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-slate-400 mb-1 block">Subject</label>
+                  <label className="text-xs text-muted-foreground mb-1 block">Subject</label>
                   <select
                     value={customSubject}
                     onChange={(e) => setCustomSubject(e.target.value as Subject)}
-                    className="w-full rounded-lg border border-slate-800 bg-slate-900 px-3 py-1.5 text-xs text-slate-100 focus:border-blue-500 focus:outline-none"
+                    className="flex h-9 w-full rounded-xl border border-input bg-background px-3 py-1 text-xs shadow-sm transition-colors text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                   >
                     <option value="Maths">Maths</option>
                     <option value="Physics">Physics</option>
@@ -204,26 +202,26 @@ export function LiveGeneratorModal({
               </div>
 
               <div>
-                <label className="text-xs text-slate-400 mb-1 block">Prompt Text</label>
+                <label className="text-xs text-muted-foreground mb-1 block">Prompt Text</label>
                 <textarea
                   rows={3}
                   value={customPrompt}
                   onChange={(e) => setCustomPrompt(e.target.value)}
                   placeholder="Describe the scientific concept, components, and movement to draw in SVG..."
-                  className="w-full rounded-lg border border-slate-800 bg-slate-900 px-3 py-2 text-xs text-slate-100 focus:border-blue-500 focus:outline-none"
+                  className="w-full rounded-xl border border-input bg-background px-3 py-2 text-xs text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring shadow-sm"
                 />
               </div>
             </div>
           )}
 
           {/* Model Selection & API Key Notice */}
-          <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+          <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
             <div className="flex items-center gap-2">
-              <label className="text-xs text-slate-400">Gemini Model:</label>
+              <label className="text-xs text-muted-foreground">Gemini Model:</label>
               <select
                 value={selectedModel}
                 onChange={(e) => setSelectedModel(e.target.value)}
-                className="rounded-lg border border-slate-800 bg-slate-900 px-2.5 py-1 text-xs text-slate-200 focus:border-blue-500 focus:outline-none"
+                className="h-8 rounded-lg border border-input bg-background px-2.5 text-xs text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
               >
                 <option value="gemini-3.5-flash-lite">gemini-3.5-flash-lite (Best Free Limits)</option>
                 <option value="gemini-3.5-flash">gemini-3.5-flash (Standard)</option>
@@ -234,7 +232,7 @@ export function LiveGeneratorModal({
               <button
                 type="button"
                 onClick={onOpenApiKey}
-                className="text-xs text-amber-400 hover:text-amber-300 underline"
+                className="text-xs text-primary hover:underline cursor-pointer"
               >
                 No API Key set in browser? Click to set
               </button>
@@ -243,33 +241,33 @@ export function LiveGeneratorModal({
 
           {/* Loading Indicator */}
           {isLoading && (
-            <div className="rounded-xl border border-blue-500/30 bg-blue-950/20 p-4 text-center space-y-2">
-              <Loader2 className="h-6 w-6 animate-spin text-blue-400 mx-auto" />
-              <p className="text-xs font-semibold text-blue-300">{statusStep}</p>
-              <p className="text-[11px] text-slate-400">
-                Running 5 deterministic checks on generated SVG...
+            <div className="rounded-xl border border-primary/30 bg-primary/5 p-4 text-center space-y-2">
+              <Loader2 className="h-6 w-6 animate-spin text-primary mx-auto" />
+              <p className="text-xs font-bold text-primary">{statusStep}</p>
+              <p className="text-[11px] text-muted-foreground">
+                Running 6 deterministic checks on generated SVG...
               </p>
             </div>
           )}
 
           {/* Error Banner with 429 guidance */}
           {errorMessage && (
-            <div className="rounded-xl border border-rose-500/40 bg-rose-950/30 p-4 space-y-2 animate-in fade-in">
-              <div className="flex items-center gap-2 text-rose-300 font-semibold text-xs">
+            <div className="rounded-xl border border-destructive/40 bg-destructive/10 p-4 space-y-2 animate-in fade-in">
+              <div className="flex items-center gap-2 text-destructive font-bold text-xs">
                 <AlertTriangle className="h-4 w-4 shrink-0" />
                 <span>Generation Error</span>
               </div>
-              <p className="text-xs text-rose-200 font-mono bg-rose-950/60 p-2 rounded border border-rose-800/60 break-words">
+              <p className="text-xs text-destructive font-mono bg-destructive/15 p-2 rounded border border-destructive/30 break-words">
                 {errorMessage}
               </p>
 
               {isRateLimit && (
-                <div className="mt-2 text-xs text-slate-300 space-y-1">
-                  <p className="font-semibold text-amber-400">
+                <div className="mt-2 text-xs text-muted-foreground space-y-1">
+                  <p className="font-semibold text-amber-500">
                     Gemini Free Tier Rate Limit (429) Encountered:
                   </p>
-                  <p className="text-[11px] text-slate-400">
-                    Google AI Studio free tier limits live calls per minute.
+                  <p className="text-[11px]">
+                    Google AI Studio limits free live calls per minute.
                     Wait 30-60 seconds, or connect your own free key in the "Set API Key" modal.
                   </p>
                 </div>
@@ -279,56 +277,59 @@ export function LiveGeneratorModal({
 
           {/* Success Preview */}
           {generatedDiagram && (
-            <div className="rounded-xl border border-emerald-500/40 bg-emerald-950/20 p-4 space-y-3 animate-in fade-in">
+            <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-4 space-y-3 animate-in fade-in">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-emerald-300 font-semibold text-xs">
+                <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold text-xs">
                   <CheckCircle2 className="h-4 w-4" />
                   <span>Generated &amp; Verified Successfully!</span>
                 </div>
-                <span className="font-mono text-xs text-amber-400">
+                <span className="font-mono text-xs font-bold text-amber-600 dark:text-amber-400">
                   {formatCost(generatedDiagram.costUSD)}
                 </span>
               </div>
 
               <div
-                className="aspect-[4/3] w-full max-h-64 rounded-lg border border-slate-800 bg-slate-950 p-2 flex items-center justify-center overflow-hidden"
+                className="aspect-[4/3] w-full max-h-64 rounded-xl border border-border bg-card p-2 flex items-center justify-center overflow-hidden"
                 dangerouslySetInnerHTML={{ __html: generatedDiagram.svg }}
               />
 
-              <p className="text-[11px] text-emerald-400 text-center">
-                All 5 checks passed! This diagram has been updated in your dashboard.
+              <p className="text-[11px] text-emerald-600 dark:text-emerald-400 text-center font-medium">
+                All 6 checks passed! This diagram has been updated in your dashboard.
               </p>
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <div className="border-t border-slate-800/80 px-6 py-3.5 bg-slate-900/50 flex items-center justify-end gap-2">
-          <button
+        <div className="border-t border-border px-6 py-3.5 bg-muted/40 flex items-center justify-end gap-2">
+          <Button
             type="button"
+            variant="outline"
+            size="sm"
             onClick={onClose}
-            className="rounded-xl border border-slate-800 bg-slate-900 px-4 py-2 text-xs font-medium text-slate-300 hover:bg-slate-800"
           >
             Close
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant="default"
+            size="sm"
             onClick={handleGenerate}
             disabled={isLoading}
-            className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-2 text-xs font-semibold text-white shadow-lg shadow-blue-500/25 hover:from-blue-500 hover:to-indigo-500 disabled:opacity-50 transition-all active:scale-95"
+            className="shadow-md shadow-primary/20 font-bold"
           >
             {isLoading ? (
               <>
-                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" />
                 <span>Generating...</span>
               </>
             ) : (
               <>
-                <Sparkles className="h-3.5 w-3.5" />
+                <Sparkles className="h-3.5 w-3.5 mr-1" />
                 <span>Run Live Generation</span>
               </>
             )}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

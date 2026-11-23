@@ -90,9 +90,9 @@ const DIAGRAM_TEMPLATES = [
   <line x1="250" y1="180" x2="370" y2="340" stroke="#2563eb" stroke-width="4" class="anim-dash" />
 
   <!-- Educational labels & arrows -->
-  <text x="310" y="360" text-anchor="middle" class="txt-label" fill="#047857">Adjacent side a = 3</text>
-  <text x="235" y="260" text-anchor="end" class="txt-label" fill="#b45309">Opposite side b = 4</text>
-  <text x="325" y="240" text-anchor="start" class="txt-label" fill="#1d4ed8">Hypotenuse c = 5 (Longest side)</text>
+  <text x="310" y="480" text-anchor="middle" class="txt-label" fill="#047857">Adjacent side a = 3</text>
+  <text x="170" y="165" text-anchor="middle" class="txt-label" fill="#b45309">Opposite side b = 4</text>
+  <text x="500" y="360" text-anchor="start" class="txt-label" fill="#1d4ed8">Hypotenuse c = 5 (Longest side)</text>
   <text x="400" y="550" text-anchor="middle" class="txt-label" fill="#475569">GCSE Key Fact: In any right-angled triangle, 3² + 4² = 9 + 16 = 25 = 5²</text>
 </svg>`,
   },
@@ -239,11 +239,11 @@ const DIAGRAM_TEMPLATES = [
   <rect x="360" y="105" width="80" height="30" fill="#0f172a" />
   <!-- Positive long terminal -->
   <line x1="385" y1="100" x2="385" y2="140" stroke="#f8fafc" stroke-width="4" />
-  <text x="375" y="95" class="txt-label" fill="#f87171">+ (12V)</text>
+  <text x="360" y="95" class="txt-label" fill="#f87171">+</text>
   <!-- Negative short terminal -->
   <line x1="415" y1="110" x2="415" y2="130" stroke="#94a3b8" stroke-width="6" />
-  <text x="420" y="95" class="txt-label" fill="#94a3b8">-</text>
-  <text x="400" y="80" text-anchor="middle" class="txt-label" fill="#38bdf8">DC Cell (VT = 12V)</text>
+  <text x="430" y="95" class="txt-label" fill="#94a3b8">-</text>
+  <text x="400" y="75" text-anchor="middle" class="txt-label" fill="#38bdf8">DC Cell (12V Total)</text>
 
   <!-- Component 1: Lamp / Bulb 1 at Bottom-Left -->
   <g transform="translate(260, 460)">
@@ -268,13 +268,13 @@ const DIAGRAM_TEMPLATES = [
   <!-- Ammeter (Current measurement) on Left Wire -->
   <circle cx="140" cy="290" r="24" fill="#0f172a" stroke="#38bdf8" stroke-width="3" />
   <text x="140" y="296" text-anchor="middle" font-family="system-ui" font-size="16" font-weight="bold" fill="#38bdf8">A</text>
-  <text x="80" y="295" text-anchor="end" class="txt-label" fill="#38bdf8">I = 2.0A everywhere</text>
+  <text x="140" y="340" text-anchor="middle" class="txt-label" fill="#38bdf8">I = 2.0A everywhere</text>
 
   <!-- Switch on Right Wire -->
   <circle cx="660" cy="270" r="4" fill="#f8fafc" />
   <circle cx="660" cy="310" r="4" fill="#f8fafc" />
   <line x1="660" y1="270" x2="660" y2="310" stroke="#4ade80" stroke-width="4" />
-  <text x="680" y="295" class="txt-label" fill="#4ade80">Closed Switch (One loop)</text>
+  <text x="660" y="340" text-anchor="middle" class="txt-label" fill="#4ade80">Closed Switch (One loop)</text>
 
   <!-- Central Key Concept Infobox -->
   <rect x="280" y="200" width="240" height="150" rx="12" fill="#1e293b" stroke="#334155" stroke-width="1.5" />

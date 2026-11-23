@@ -4,13 +4,14 @@
     "concept": "Pythagoras' theorem",
     "subject": "Maths",
     "promptText": "In a right-angled triangle, the longest side is called the hypotenuse. The square of the hypotenuse is equal to the sum of the squares of the other two sides: a2 + b2 = c2.",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 600\" width=\"100%\" height=\"100%\">\n  <title>Pythagoras' Theorem Diagram</title>\n  <defs>\n    <linearGradient id=\"hypoGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#3b82f6\" />\n      <stop offset=\"100%\" stop-color=\"#1d4ed8\" />\n    </linearGradient>\n    <linearGradient id=\"sqAGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#10b981\" />\n      <stop offset=\"100%\" stop-color=\"#047857\" />\n    </linearGradient>\n    <linearGradient id=\"sqBGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#f59e0b\" />\n      <stop offset=\"100%\" stop-color=\"#b45309\" />\n    </linearGradient>\n    <style>\n      @keyframes pulseGlow {\n        0%, 100% { opacity: 0.85; filter: drop-shadow(0 0 2px rgba(59,130,246,0.3)); }\n        50% { opacity: 1; filter: drop-shadow(0 0 10px rgba(59,130,246,0.8)); }\n      }\n      @keyframes dashMove {\n        to { stroke-dashoffset: -40; }\n      }\n      .anim-pulse { animation: pulseGlow 3s infinite ease-in-out; }\n      .anim-dash { stroke-dasharray: 8 6; animation: dashMove 2s linear infinite; }\n      .txt-title { font-family: system-ui, -apple-system, sans-serif; font-size: 22px; font-weight: 700; fill: #0f172a; }\n      .txt-label { font-family: system-ui, -apple-system, sans-serif; font-size: 14px; font-weight: 600; fill: #334155; }\n      .txt-math { font-family: \"Courier New\", monospace; font-size: 16px; font-weight: 700; }\n    </style>\n  </defs>\n\n  <!-- Background container -->\n  <rect x=\"10\" y=\"10\" width=\"780\" height=\"580\" rx=\"16\" fill=\"#f8fafc\" stroke=\"#e2e8f0\" stroke-width=\"2\" />\n\n  <!-- Title & Formula banner -->\n  <text x=\"400\" y=\"50\" text-anchor=\"middle\" class=\"txt-title\">Pythagoras' Theorem: a² + b² = c²</text>\n  <rect x=\"250\" y=\"70\" width=\"300\" height=\"34\" rx=\"8\" fill=\"#e0f2fe\" stroke=\"#38bdf8\" stroke-width=\"1.5\" />\n  <text x=\"400\" y=\"93\" text-anchor=\"middle\" class=\"txt-math\" fill=\"#0369a1\">Area(c²) = Area(a²) + Area(b²)</text>\n\n  <!-- Side a square (Base = 120px, 3x3 grid) -->\n  <rect x=\"250\" y=\"340\" width=\"120\" height=\"120\" fill=\"url(#sqAGrad)\" fill-opacity=\"0.25\" stroke=\"#10b981\" stroke-width=\"2.5\" />\n  <line x1=\"290\" y1=\"340\" x2=\"290\" y2=\"460\" stroke=\"#10b981\" stroke-width=\"1\" stroke-opacity=\"0.4\" />\n  <line x1=\"330\" y1=\"340\" x2=\"330\" y2=\"460\" stroke=\"#10b981\" stroke-width=\"1\" stroke-opacity=\"0.4\" />\n  <line x1=\"250\" y1=\"380\" x2=\"370\" y2=\"380\" stroke=\"#10b981\" stroke-width=\"1\" stroke-opacity=\"0.4\" />\n  <line x1=\"250\" y1=\"420\" x2=\"370\" y2=\"420\" stroke=\"#10b981\" stroke-width=\"1\" stroke-opacity=\"0.4\" />\n  <text x=\"310\" y=\"405\" text-anchor=\"middle\" class=\"txt-label\" fill=\"#065f46\">Square a² = 9</text>\n\n  <!-- Side b square (Height = 160px, 4x4 grid) -->\n  <rect x=\"90\" y=\"180\" width=\"160\" height=\"160\" fill=\"url(#sqBGrad)\" fill-opacity=\"0.25\" stroke=\"#f59e0b\" stroke-width=\"2.5\" />\n  <line x1=\"130\" y1=\"180\" x2=\"130\" y2=\"340\" stroke=\"#f59e0b\" stroke-width=\"1\" stroke-opacity=\"0.4\" />\n  <line x1=\"170\" y1=\"180\" x2=\"170\" y2=\"340\" stroke=\"#f59e0b\" stroke-width=\"1\" stroke-opacity=\"0.4\" />\n  <line x1=\"210\" y1=\"180\" x2=\"210\" y2=\"340\" stroke=\"#f59e0b\" stroke-width=\"1\" stroke-opacity=\"0.4\" />\n  <line x1=\"90\" y1=\"220\" x2=\"250\" y2=\"220\" stroke=\"#f59e0b\" stroke-width=\"1\" stroke-opacity=\"0.4\" />\n  <line x1=\"90\" y1=\"260\" x2=\"250\" y2=\"260\" stroke=\"#f59e0b\" stroke-width=\"1\" stroke-opacity=\"0.4\" />\n  <line x1=\"90\" y1=\"300\" x2=\"250\" y2=\"300\" stroke=\"#f59e0b\" stroke-width=\"1\" stroke-opacity=\"0.4\" />\n  <text x=\"170\" y=\"265\" text-anchor=\"middle\" class=\"txt-label\" fill=\"#92400e\">Square b² = 16</text>\n\n  <!-- Right-Angled Triangle -->\n  <polygon points=\"250,340 370,340 250,180\" fill=\"#6366f1\" fill-opacity=\"0.15\" stroke=\"#4f46e5\" stroke-width=\"3\" />\n\n  <!-- 90 degree indicator square -->\n  <rect x=\"250\" y=\"325\" width=\"15\" height=\"15\" fill=\"none\" stroke=\"#4f46e5\" stroke-width=\"2\" />\n  <circle cx=\"257\" cy=\"332\" r=\"1.5\" fill=\"#4f46e5\" />\n\n  <!-- Hypotenuse square c (Hypotenuse = 200px, 5x5 grid rotated) -->\n  <g transform=\"translate(370, 340) rotate(-126.87)\" class=\"anim-pulse\">\n    <rect x=\"0\" y=\"0\" width=\"200\" height=\"200\" fill=\"url(#hypoGrad)\" fill-opacity=\"0.3\" stroke=\"#2563eb\" stroke-width=\"3\" />\n    <text x=\"100\" y=\"105\" text-anchor=\"middle\" transform=\"rotate(126.87 100 105)\" class=\"txt-label\" fill=\"#1e40af\">Hypotenuse Square c² = 25</text>\n  </g>\n\n  <!-- Hypotenuse flowing dashed path -->\n  <line x1=\"250\" y1=\"180\" x2=\"370\" y2=\"340\" stroke=\"#2563eb\" stroke-width=\"4\" class=\"anim-dash\" />\n\n  <!-- Educational labels & arrows -->\n  <text x=\"310\" y=\"360\" text-anchor=\"middle\" class=\"txt-label\" fill=\"#047857\">Adjacent side a = 3</text>\n  <text x=\"235\" y=\"260\" text-anchor=\"end\" class=\"txt-label\" fill=\"#b45309\">Opposite side b = 4</text>\n  <text x=\"325\" y=\"240\" text-anchor=\"start\" class=\"txt-label\" fill=\"#1d4ed8\">Hypotenuse c = 5 (Longest side)</text>\n  <text x=\"400\" y=\"550\" text-anchor=\"middle\" class=\"txt-label\" fill=\"#475569\">GCSE Key Fact: In any right-angled triangle, 3² + 4² = 9 + 16 = 25 = 5²</text>\n</svg>",
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 600\" width=\"100%\" height=\"100%\">\n  <title>Pythagoras' Theorem Diagram</title>\n  <defs>\n    <linearGradient id=\"hypoGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#3b82f6\" />\n      <stop offset=\"100%\" stop-color=\"#1d4ed8\" />\n    </linearGradient>\n    <linearGradient id=\"sqAGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#10b981\" />\n      <stop offset=\"100%\" stop-color=\"#047857\" />\n    </linearGradient>\n    <linearGradient id=\"sqBGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">\n      <stop offset=\"0%\" stop-color=\"#f59e0b\" />\n      <stop offset=\"100%\" stop-color=\"#b45309\" />\n    </linearGradient>\n    <style>\n      @keyframes pulseGlow {\n        0%, 100% { opacity: 0.85; filter: drop-shadow(0 0 2px rgba(59,130,246,0.3)); }\n        50% { opacity: 1; filter: drop-shadow(0 0 10px rgba(59,130,246,0.8)); }\n      }\n      @keyframes dashMove {\n        to { stroke-dashoffset: -40; }\n      }\n      .anim-pulse { animation: pulseGlow 3s infinite ease-in-out; }\n      .anim-dash { stroke-dasharray: 8 6; animation: dashMove 2s linear infinite; }\n      .txt-title { font-family: system-ui, -apple-system, sans-serif; font-size: 22px; font-weight: 700; fill: #0f172a; }\n      .txt-label { font-family: system-ui, -apple-system, sans-serif; font-size: 14px; font-weight: 600; fill: #334155; }\n      .txt-math { font-family: \"Courier New\", monospace; font-size: 16px; font-weight: 700; }\n    </style>\n  </defs>\n\n  <!-- Background container -->\n  <rect x=\"10\" y=\"10\" width=\"780\" height=\"580\" rx=\"16\" fill=\"#f8fafc\" stroke=\"#e2e8f0\" stroke-width=\"2\" />\n\n  <!-- Title & Formula banner -->\n  <text x=\"400\" y=\"50\" text-anchor=\"middle\" class=\"txt-title\">Pythagoras' Theorem: a² + b² = c²</text>\n  <rect x=\"250\" y=\"70\" width=\"300\" height=\"34\" rx=\"8\" fill=\"#e0f2fe\" stroke=\"#38bdf8\" stroke-width=\"1.5\" />\n  <text x=\"400\" y=\"93\" text-anchor=\"middle\" class=\"txt-math\" fill=\"#0369a1\">Area(c²) = Area(a²) + Area(b²)</text>\n\n  <!-- Side a square (Base = 120px, 3x3 grid) -->\n  <rect x=\"250\" y=\"340\" width=\"120\" height=\"120\" fill=\"url(#sqAGrad)\" fill-opacity=\"0.25\" stroke=\"#10b981\" stroke-width=\"2.5\" />\n  <line x1=\"290\" y1=\"340\" x2=\"290\" y2=\"460\" stroke=\"#10b981\" stroke-width=\"1\" stroke-opacity=\"0.4\" />\n  <line x1=\"330\" y1=\"340\" x2=\"330\" y2=\"460\" stroke=\"#10b981\" stroke-width=\"1\" stroke-opacity=\"0.4\" />\n  <line x1=\"250\" y1=\"380\" x2=\"370\" y2=\"380\" stroke=\"#10b981\" stroke-width=\"1\" stroke-opacity=\"0.4\" />\n  <line x1=\"250\" y1=\"420\" x2=\"370\" y2=\"420\" stroke=\"#10b981\" stroke-width=\"1\" stroke-opacity=\"0.4\" />\n  <text x=\"310\" y=\"405\" text-anchor=\"middle\" class=\"txt-label\" fill=\"#065f46\">Square a² = 9</text>\n\n  <!-- Side b square (Height = 160px, 4x4 grid) -->\n  <rect x=\"90\" y=\"180\" width=\"160\" height=\"160\" fill=\"url(#sqBGrad)\" fill-opacity=\"0.25\" stroke=\"#f59e0b\" stroke-width=\"2.5\" />\n  <line x1=\"130\" y1=\"180\" x2=\"130\" y2=\"340\" stroke=\"#f59e0b\" stroke-width=\"1\" stroke-opacity=\"0.4\" />\n  <line x1=\"170\" y1=\"180\" x2=\"170\" y2=\"340\" stroke=\"#f59e0b\" stroke-width=\"1\" stroke-opacity=\"0.4\" />\n  <line x1=\"210\" y1=\"180\" x2=\"210\" y2=\"340\" stroke=\"#f59e0b\" stroke-width=\"1\" stroke-opacity=\"0.4\" />\n  <line x1=\"90\" y1=\"220\" x2=\"250\" y2=\"220\" stroke=\"#f59e0b\" stroke-width=\"1\" stroke-opacity=\"0.4\" />\n  <line x1=\"90\" y1=\"260\" x2=\"250\" y2=\"260\" stroke=\"#f59e0b\" stroke-width=\"1\" stroke-opacity=\"0.4\" />\n  <line x1=\"90\" y1=\"300\" x2=\"250\" y2=\"300\" stroke=\"#f59e0b\" stroke-width=\"1\" stroke-opacity=\"0.4\" />\n  <text x=\"170\" y=\"265\" text-anchor=\"middle\" class=\"txt-label\" fill=\"#92400e\">Square b² = 16</text>\n\n  <!-- Right-Angled Triangle -->\n  <polygon points=\"250,340 370,340 250,180\" fill=\"#6366f1\" fill-opacity=\"0.15\" stroke=\"#4f46e5\" stroke-width=\"3\" />\n\n  <!-- 90 degree indicator square -->\n  <rect x=\"250\" y=\"325\" width=\"15\" height=\"15\" fill=\"none\" stroke=\"#4f46e5\" stroke-width=\"2\" />\n  <circle cx=\"257\" cy=\"332\" r=\"1.5\" fill=\"#4f46e5\" />\n\n  <!-- Hypotenuse square c (Hypotenuse = 200px, 5x5 grid rotated) -->\n  <g transform=\"translate(370, 340) rotate(-126.87)\" class=\"anim-pulse\">\n    <rect x=\"0\" y=\"0\" width=\"200\" height=\"200\" fill=\"url(#hypoGrad)\" fill-opacity=\"0.3\" stroke=\"#2563eb\" stroke-width=\"3\" />\n    <text x=\"100\" y=\"105\" text-anchor=\"middle\" transform=\"rotate(126.87 100 105)\" class=\"txt-label\" fill=\"#1e40af\">Hypotenuse Square c² = 25</text>\n  </g>\n\n  <!-- Hypotenuse flowing dashed path -->\n  <line x1=\"250\" y1=\"180\" x2=\"370\" y2=\"340\" stroke=\"#2563eb\" stroke-width=\"4\" class=\"anim-dash\" />\n\n  <!-- Educational labels & arrows -->\n  <text x=\"310\" y=\"480\" text-anchor=\"middle\" class=\"txt-label\" fill=\"#047857\">Adjacent side a = 3</text>\n  <text x=\"170\" y=\"165\" text-anchor=\"middle\" class=\"txt-label\" fill=\"#b45309\">Opposite side b = 4</text>\n  <text x=\"500\" y=\"360\" text-anchor=\"start\" class=\"txt-label\" fill=\"#1d4ed8\">Hypotenuse c = 5 (Longest side)</text>\n  <text x=\"400\" y=\"550\" text-anchor=\"middle\" class=\"txt-label\" fill=\"#475569\">GCSE Key Fact: In any right-angled triangle, 3² + 4² = 9 + 16 = 25 = 5²</text>\n</svg>",
     "checks": {
       "xmlValid": true,
       "viewBoxContained": true,
       "hasTitleAndLabels": true,
       "hasAnimation": true,
-      "customSemanticRichness": true
+      "customSemanticRichness": true,
+      "noOverlappingLabels": true
     },
     "checkDetails": [
       {
@@ -23,9 +24,9 @@
       {
         "id": "viewbox-bounds",
         "name": "Within ViewBox Bounds",
-        "description": "All graphical and text elements stay within the defined viewBox dimensions.",
+        "description": "All graphical and text elements stay within the defined viewBox dimensions (transform-aware).",
         "passed": true,
-        "details": "ViewBox [0, 0, 800, 600] verified. All checked elements fit inside."
+        "details": "ViewBox [0, 0, 800, 600] verified. All transform-projected elements fit inside."
       },
       {
         "id": "title-and-labels",
@@ -46,7 +47,14 @@
         "name": "Visual Richness (Custom Check)",
         "description": "Contains at least 3 vector shapes (<path>, <circle>, <rect>, etc.) and responsive viewBox.",
         "passed": true,
-        "details": "Passed: High graphic richness with 19 vector shapes [circle (1), rect (6), line (11), polygon (1)] and responsive viewBox."
+        "details": "Passed: Graphic richness with 19 vector shapes [circle (1), rect (6), line (11), polygon (1)] and responsive viewBox."
+      },
+      {
+        "id": "no-overlapping-labels",
+        "name": "Zero Label Collisions",
+        "description": "Ensures text labels do not collide or render directly over each other.",
+        "passed": true,
+        "details": "Passed: All text labels have distinct, non-overlapping coordinates."
       }
     ],
     "allChecksPassed": true,
@@ -56,7 +64,7 @@
     "totalTokens": 1276,
     "costUSD": 0.000297,
     "retryCount": 0,
-    "timestamp": "2026-11-23T19:19:38.862Z"
+    "timestamp": "2026-11-23T20:45:26.220Z"
   },
   {
     "id": 2,
@@ -69,7 +77,8 @@
       "viewBoxContained": true,
       "hasTitleAndLabels": true,
       "hasAnimation": true,
-      "customSemanticRichness": true
+      "customSemanticRichness": true,
+      "noOverlappingLabels": true
     },
     "checkDetails": [
       {
@@ -82,9 +91,9 @@
       {
         "id": "viewbox-bounds",
         "name": "Within ViewBox Bounds",
-        "description": "All graphical and text elements stay within the defined viewBox dimensions.",
+        "description": "All graphical and text elements stay within the defined viewBox dimensions (transform-aware).",
         "passed": true,
-        "details": "ViewBox [0, 0, 800, 600] verified. All checked elements fit inside."
+        "details": "ViewBox [0, 0, 800, 600] verified. All transform-projected elements fit inside."
       },
       {
         "id": "title-and-labels",
@@ -105,7 +114,14 @@
         "name": "Visual Richness (Custom Check)",
         "description": "Contains at least 3 vector shapes (<path>, <circle>, <rect>, etc.) and responsive viewBox.",
         "passed": true,
-        "details": "Passed: High graphic richness with 16 vector shapes [path (1), circle (3), rect (7), line (2), polygon (3)] and responsive viewBox."
+        "details": "Passed: Graphic richness with 16 vector shapes [path (1), circle (3), rect (7), line (2), polygon (3)] and responsive viewBox."
+      },
+      {
+        "id": "no-overlapping-labels",
+        "name": "Zero Label Collisions",
+        "description": "Ensures text labels do not collide or render directly over each other.",
+        "passed": true,
+        "details": "Passed: All text labels have distinct, non-overlapping coordinates."
       }
     ],
     "allChecksPassed": true,
@@ -115,20 +131,21 @@
     "totalTokens": 1247,
     "costUSD": 0.000285,
     "retryCount": 0,
-    "timestamp": "2026-11-23T19:19:38.864Z"
+    "timestamp": "2026-11-23T20:45:26.235Z"
   },
   {
     "id": 3,
     "concept": "Series circuit",
     "subject": "Physics",
     "promptText": "In a series circuit there is only one loop. The current is the same everywhere in the loop. The voltage of the cell is shared between the components.",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 600\" width=\"100%\" height=\"100%\">\n  <title>Physics Series Circuit Diagram</title>\n  <defs>\n    <style>\n      @keyframes electronFlow {\n        0% { stroke-dashoffset: 0; }\n        100% { stroke-dashoffset: -800; }\n      }\n      @keyframes bulbGlow {\n        0%, 100% { filter: drop-shadow(0 0 4px #fbbf24); opacity: 0.9; }\n        50% { filter: drop-shadow(0 0 16px #f59e0b); opacity: 1; }\n      }\n      .wire-electrons { stroke-dasharray: 6 24; animation: electronFlow 6s linear infinite; }\n      .bulb-filament { animation: bulbGlow 2s infinite ease-in-out; }\n      .txt-heading { font-family: system-ui, -apple-system, sans-serif; font-size: 22px; font-weight: 700; fill: #0f172a; }\n      .txt-label { font-family: system-ui, -apple-system, sans-serif; font-size: 14px; font-weight: 600; fill: #1e293b; }\n      .txt-value { font-family: \"Courier New\", monospace; font-size: 14px; font-weight: 700; fill: #d97706; }\n    </style>\n  </defs>\n\n  <!-- Background Canvas -->\n  <rect x=\"10\" y=\"10\" width=\"780\" height=\"580\" rx=\"16\" fill=\"#0f172a\" stroke=\"#1e293b\" stroke-width=\"2\" />\n\n  <!-- Title Header -->\n  <text x=\"400\" y=\"50\" text-anchor=\"middle\" class=\"txt-heading\" fill=\"#f8fafc\">Series Circuit: Single Loop & Shared Voltage</text>\n\n  <!-- Main Copper Wire Circuit Loop -->\n  <rect x=\"140\" y=\"120\" width=\"520\" height=\"340\" rx=\"20\" fill=\"none\" stroke=\"#475569\" stroke-width=\"6\" />\n\n  <!-- Animated Electron Flow Overlay -->\n  <rect x=\"140\" y=\"120\" width=\"520\" height=\"340\" rx=\"20\" fill=\"none\" stroke=\"#38bdf8\" stroke-width=\"6\" stroke-linecap=\"round\" class=\"wire-electrons\" />\n\n  <!-- DC Cell / Battery at Top -->\n  <rect x=\"360\" y=\"105\" width=\"80\" height=\"30\" fill=\"#0f172a\" />\n  <!-- Positive long terminal -->\n  <line x1=\"385\" y1=\"100\" x2=\"385\" y2=\"140\" stroke=\"#f8fafc\" stroke-width=\"4\" />\n  <text x=\"375\" y=\"95\" class=\"txt-label\" fill=\"#f87171\">+ (12V)</text>\n  <!-- Negative short terminal -->\n  <line x1=\"415\" y1=\"110\" x2=\"415\" y2=\"130\" stroke=\"#94a3b8\" stroke-width=\"6\" />\n  <text x=\"420\" y=\"95\" class=\"txt-label\" fill=\"#94a3b8\">-</text>\n  <text x=\"400\" y=\"80\" text-anchor=\"middle\" class=\"txt-label\" fill=\"#38bdf8\">DC Cell (VT = 12V)</text>\n\n  <!-- Component 1: Lamp / Bulb 1 at Bottom-Left -->\n  <g transform=\"translate(260, 460)\">\n    <circle cx=\"0\" cy=\"0\" r=\"28\" fill=\"#1e293b\" stroke=\"#fbbf24\" stroke-width=\"3\" class=\"bulb-filament\" />\n    <line x1=\"-18\" y1=\"-18\" x2=\"18\" y2=\"18\" stroke=\"#fef08a\" stroke-width=\"3\" />\n    <line x1=\"-18\" y1=\"18\" x2=\"18\" y2=\"-18\" stroke=\"#fef08a\" stroke-width=\"3\" />\n  </g>\n  <text x=\"260\" y=\"515\" text-anchor=\"middle\" class=\"txt-label\" fill=\"#f8fafc\">Lamp 1</text>\n  <rect x=\"200\" y=\"525\" width=\"120\" height=\"26\" rx=\"4\" fill=\"#1e293b\" stroke=\"#f59e0b\" stroke-width=\"1\" />\n  <text x=\"260\" y=\"542\" text-anchor=\"middle\" class=\"txt-value\">V1 = 6V</text>\n\n  <!-- Component 2: Lamp / Bulb 2 at Bottom-Right -->\n  <g transform=\"translate(540, 460)\">\n    <circle cx=\"0\" cy=\"0\" r=\"28\" fill=\"#1e293b\" stroke=\"#fbbf24\" stroke-width=\"3\" class=\"bulb-filament\" />\n    <line x1=\"-18\" y1=\"-18\" x2=\"18\" y2=\"18\" stroke=\"#fef08a\" stroke-width=\"3\" />\n    <line x1=\"-18\" y1=\"18\" x2=\"18\" y2=\"-18\" stroke=\"#fef08a\" stroke-width=\"3\" />\n  </g>\n  <text x=\"540\" y=\"515\" text-anchor=\"middle\" class=\"txt-label\" fill=\"#f8fafc\">Lamp 2</text>\n  <rect x=\"480\" y=\"525\" width=\"120\" height=\"26\" rx=\"4\" fill=\"#1e293b\" stroke=\"#f59e0b\" stroke-width=\"1\" />\n  <text x=\"540\" y=\"542\" text-anchor=\"middle\" class=\"txt-value\">V2 = 6V</text>\n\n  <!-- Ammeter (Current measurement) on Left Wire -->\n  <circle cx=\"140\" cy=\"290\" r=\"24\" fill=\"#0f172a\" stroke=\"#38bdf8\" stroke-width=\"3\" />\n  <text x=\"140\" y=\"296\" text-anchor=\"middle\" font-family=\"system-ui\" font-size=\"16\" font-weight=\"bold\" fill=\"#38bdf8\">A</text>\n  <text x=\"80\" y=\"295\" text-anchor=\"end\" class=\"txt-label\" fill=\"#38bdf8\">I = 2.0A everywhere</text>\n\n  <!-- Switch on Right Wire -->\n  <circle cx=\"660\" cy=\"270\" r=\"4\" fill=\"#f8fafc\" />\n  <circle cx=\"660\" cy=\"310\" r=\"4\" fill=\"#f8fafc\" />\n  <line x1=\"660\" y1=\"270\" x2=\"660\" y2=\"310\" stroke=\"#4ade80\" stroke-width=\"4\" />\n  <text x=\"680\" y=\"295\" class=\"txt-label\" fill=\"#4ade80\">Closed Switch (One loop)</text>\n\n  <!-- Central Key Concept Infobox -->\n  <rect x=\"280\" y=\"200\" width=\"240\" height=\"150\" rx=\"12\" fill=\"#1e293b\" stroke=\"#334155\" stroke-width=\"1.5\" />\n  <text x=\"400\" y=\"230\" text-anchor=\"middle\" class=\"txt-label\" fill=\"#38bdf8\">GCSE Physics Rules</text>\n  <text x=\"400\" y=\"260\" text-anchor=\"middle\" class=\"txt-label\" fill=\"#94a3b8\">1. Single loop path</text>\n  <text x=\"400\" y=\"290\" text-anchor=\"middle\" class=\"txt-label\" fill=\"#4ade80\">2. Current (I) is constant</text>\n  <text x=\"400\" y=\"320\" text-anchor=\"middle\" class=\"txt-label\" fill=\"#fbbf24\">3. V_cell = V1 + V2 = 12V</text>\n</svg>",
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 800 600\" width=\"100%\" height=\"100%\">\n  <title>Physics Series Circuit Diagram</title>\n  <defs>\n    <style>\n      @keyframes electronFlow {\n        0% { stroke-dashoffset: 0; }\n        100% { stroke-dashoffset: -800; }\n      }\n      @keyframes bulbGlow {\n        0%, 100% { filter: drop-shadow(0 0 4px #fbbf24); opacity: 0.9; }\n        50% { filter: drop-shadow(0 0 16px #f59e0b); opacity: 1; }\n      }\n      .wire-electrons { stroke-dasharray: 6 24; animation: electronFlow 6s linear infinite; }\n      .bulb-filament { animation: bulbGlow 2s infinite ease-in-out; }\n      .txt-heading { font-family: system-ui, -apple-system, sans-serif; font-size: 22px; font-weight: 700; fill: #0f172a; }\n      .txt-label { font-family: system-ui, -apple-system, sans-serif; font-size: 14px; font-weight: 600; fill: #1e293b; }\n      .txt-value { font-family: \"Courier New\", monospace; font-size: 14px; font-weight: 700; fill: #d97706; }\n    </style>\n  </defs>\n\n  <!-- Background Canvas -->\n  <rect x=\"10\" y=\"10\" width=\"780\" height=\"580\" rx=\"16\" fill=\"#0f172a\" stroke=\"#1e293b\" stroke-width=\"2\" />\n\n  <!-- Title Header -->\n  <text x=\"400\" y=\"50\" text-anchor=\"middle\" class=\"txt-heading\" fill=\"#f8fafc\">Series Circuit: Single Loop & Shared Voltage</text>\n\n  <!-- Main Copper Wire Circuit Loop -->\n  <rect x=\"140\" y=\"120\" width=\"520\" height=\"340\" rx=\"20\" fill=\"none\" stroke=\"#475569\" stroke-width=\"6\" />\n\n  <!-- Animated Electron Flow Overlay -->\n  <rect x=\"140\" y=\"120\" width=\"520\" height=\"340\" rx=\"20\" fill=\"none\" stroke=\"#38bdf8\" stroke-width=\"6\" stroke-linecap=\"round\" class=\"wire-electrons\" />\n\n  <!-- DC Cell / Battery at Top -->\n  <rect x=\"360\" y=\"105\" width=\"80\" height=\"30\" fill=\"#0f172a\" />\n  <!-- Positive long terminal -->\n  <line x1=\"385\" y1=\"100\" x2=\"385\" y2=\"140\" stroke=\"#f8fafc\" stroke-width=\"4\" />\n  <text x=\"360\" y=\"95\" class=\"txt-label\" fill=\"#f87171\">+</text>\n  <!-- Negative short terminal -->\n  <line x1=\"415\" y1=\"110\" x2=\"415\" y2=\"130\" stroke=\"#94a3b8\" stroke-width=\"6\" />\n  <text x=\"430\" y=\"95\" class=\"txt-label\" fill=\"#94a3b8\">-</text>\n  <text x=\"400\" y=\"75\" text-anchor=\"middle\" class=\"txt-label\" fill=\"#38bdf8\">DC Cell (12V Total)</text>\n\n  <!-- Component 1: Lamp / Bulb 1 at Bottom-Left -->\n  <g transform=\"translate(260, 460)\">\n    <circle cx=\"0\" cy=\"0\" r=\"28\" fill=\"#1e293b\" stroke=\"#fbbf24\" stroke-width=\"3\" class=\"bulb-filament\" />\n    <line x1=\"-18\" y1=\"-18\" x2=\"18\" y2=\"18\" stroke=\"#fef08a\" stroke-width=\"3\" />\n    <line x1=\"-18\" y1=\"18\" x2=\"18\" y2=\"-18\" stroke=\"#fef08a\" stroke-width=\"3\" />\n  </g>\n  <text x=\"260\" y=\"515\" text-anchor=\"middle\" class=\"txt-label\" fill=\"#f8fafc\">Lamp 1</text>\n  <rect x=\"200\" y=\"525\" width=\"120\" height=\"26\" rx=\"4\" fill=\"#1e293b\" stroke=\"#f59e0b\" stroke-width=\"1\" />\n  <text x=\"260\" y=\"542\" text-anchor=\"middle\" class=\"txt-value\">V1 = 6V</text>\n\n  <!-- Component 2: Lamp / Bulb 2 at Bottom-Right -->\n  <g transform=\"translate(540, 460)\">\n    <circle cx=\"0\" cy=\"0\" r=\"28\" fill=\"#1e293b\" stroke=\"#fbbf24\" stroke-width=\"3\" class=\"bulb-filament\" />\n    <line x1=\"-18\" y1=\"-18\" x2=\"18\" y2=\"18\" stroke=\"#fef08a\" stroke-width=\"3\" />\n    <line x1=\"-18\" y1=\"18\" x2=\"18\" y2=\"-18\" stroke=\"#fef08a\" stroke-width=\"3\" />\n  </g>\n  <text x=\"540\" y=\"515\" text-anchor=\"middle\" class=\"txt-label\" fill=\"#f8fafc\">Lamp 2</text>\n  <rect x=\"480\" y=\"525\" width=\"120\" height=\"26\" rx=\"4\" fill=\"#1e293b\" stroke=\"#f59e0b\" stroke-width=\"1\" />\n  <text x=\"540\" y=\"542\" text-anchor=\"middle\" class=\"txt-value\">V2 = 6V</text>\n\n  <!-- Ammeter (Current measurement) on Left Wire -->\n  <circle cx=\"140\" cy=\"290\" r=\"24\" fill=\"#0f172a\" stroke=\"#38bdf8\" stroke-width=\"3\" />\n  <text x=\"140\" y=\"296\" text-anchor=\"middle\" font-family=\"system-ui\" font-size=\"16\" font-weight=\"bold\" fill=\"#38bdf8\">A</text>\n  <text x=\"140\" y=\"340\" text-anchor=\"middle\" class=\"txt-label\" fill=\"#38bdf8\">I = 2.0A everywhere</text>\n\n  <!-- Switch on Right Wire -->\n  <circle cx=\"660\" cy=\"270\" r=\"4\" fill=\"#f8fafc\" />\n  <circle cx=\"660\" cy=\"310\" r=\"4\" fill=\"#f8fafc\" />\n  <line x1=\"660\" y1=\"270\" x2=\"660\" y2=\"310\" stroke=\"#4ade80\" stroke-width=\"4\" />\n  <text x=\"660\" y=\"340\" text-anchor=\"middle\" class=\"txt-label\" fill=\"#4ade80\">Closed Switch (One loop)</text>\n\n  <!-- Central Key Concept Infobox -->\n  <rect x=\"280\" y=\"200\" width=\"240\" height=\"150\" rx=\"12\" fill=\"#1e293b\" stroke=\"#334155\" stroke-width=\"1.5\" />\n  <text x=\"400\" y=\"230\" text-anchor=\"middle\" class=\"txt-label\" fill=\"#38bdf8\">GCSE Physics Rules</text>\n  <text x=\"400\" y=\"260\" text-anchor=\"middle\" class=\"txt-label\" fill=\"#94a3b8\">1. Single loop path</text>\n  <text x=\"400\" y=\"290\" text-anchor=\"middle\" class=\"txt-label\" fill=\"#4ade80\">2. Current (I) is constant</text>\n  <text x=\"400\" y=\"320\" text-anchor=\"middle\" class=\"txt-label\" fill=\"#fbbf24\">3. V_cell = V1 + V2 = 12V</text>\n</svg>",
     "checks": {
       "xmlValid": true,
       "viewBoxContained": true,
       "hasTitleAndLabels": true,
       "hasAnimation": true,
-      "customSemanticRichness": true
+      "customSemanticRichness": true,
+      "noOverlappingLabels": true
     },
     "checkDetails": [
       {
@@ -141,9 +158,9 @@
       {
         "id": "viewbox-bounds",
         "name": "Within ViewBox Bounds",
-        "description": "All graphical and text elements stay within the defined viewBox dimensions.",
+        "description": "All graphical and text elements stay within the defined viewBox dimensions (transform-aware).",
         "passed": true,
-        "details": "ViewBox [0, 0, 800, 600] verified. All checked elements fit inside."
+        "details": "ViewBox [0, 0, 800, 600] verified. All transform-projected elements fit inside."
       },
       {
         "id": "title-and-labels",
@@ -164,7 +181,14 @@
         "name": "Visual Richness (Custom Check)",
         "description": "Contains at least 3 vector shapes (<path>, <circle>, <rect>, etc.) and responsive viewBox.",
         "passed": true,
-        "details": "Passed: High graphic richness with 19 vector shapes [circle (5), rect (7), line (7)] and responsive viewBox."
+        "details": "Passed: Graphic richness with 19 vector shapes [circle (5), rect (7), line (7)] and responsive viewBox."
+      },
+      {
+        "id": "no-overlapping-labels",
+        "name": "Zero Label Collisions",
+        "description": "Ensures text labels do not collide or render directly over each other.",
+        "passed": true,
+        "details": "Passed: All text labels have distinct, non-overlapping coordinates."
       }
     ],
     "allChecksPassed": true,
@@ -174,7 +198,7 @@
     "totalTokens": 1325,
     "costUSD": 0.000305,
     "retryCount": 0,
-    "timestamp": "2026-11-23T19:19:38.865Z"
+    "timestamp": "2026-11-23T20:45:26.240Z"
   },
   {
     "id": 4,
@@ -187,7 +211,8 @@
       "viewBoxContained": true,
       "hasTitleAndLabels": true,
       "hasAnimation": true,
-      "customSemanticRichness": true
+      "customSemanticRichness": true,
+      "noOverlappingLabels": true
     },
     "checkDetails": [
       {
@@ -200,9 +225,9 @@
       {
         "id": "viewbox-bounds",
         "name": "Within ViewBox Bounds",
-        "description": "All graphical and text elements stay within the defined viewBox dimensions.",
+        "description": "All graphical and text elements stay within the defined viewBox dimensions (transform-aware).",
         "passed": true,
-        "details": "ViewBox [0, 0, 800, 600] verified. All checked elements fit inside."
+        "details": "ViewBox [0, 0, 800, 600] verified. All transform-projected elements fit inside."
       },
       {
         "id": "title-and-labels",
@@ -223,7 +248,14 @@
         "name": "Visual Richness (Custom Check)",
         "description": "Contains at least 3 vector shapes (<path>, <circle>, <rect>, etc.) and responsive viewBox.",
         "passed": true,
-        "details": "Passed: High graphic richness with 23 vector shapes [path (6), circle (1), rect (7), ellipse (1), line (4), polygon (4)] and responsive viewBox."
+        "details": "Passed: Graphic richness with 23 vector shapes [path (6), circle (1), rect (7), ellipse (1), line (4), polygon (4)] and responsive viewBox."
+      },
+      {
+        "id": "no-overlapping-labels",
+        "name": "Zero Label Collisions",
+        "description": "Ensures text labels do not collide or render directly over each other.",
+        "passed": true,
+        "details": "Passed: All text labels have distinct, non-overlapping coordinates."
       }
     ],
     "allChecksPassed": true,
@@ -233,7 +265,7 @@
     "totalTokens": 1268,
     "costUSD": 0.000293,
     "retryCount": 0,
-    "timestamp": "2026-11-23T19:19:38.866Z"
+    "timestamp": "2026-11-23T20:45:26.243Z"
   },
   {
     "id": 5,
@@ -246,7 +278,8 @@
       "viewBoxContained": true,
       "hasTitleAndLabels": true,
       "hasAnimation": true,
-      "customSemanticRichness": true
+      "customSemanticRichness": true,
+      "noOverlappingLabels": true
     },
     "checkDetails": [
       {
@@ -259,9 +292,9 @@
       {
         "id": "viewbox-bounds",
         "name": "Within ViewBox Bounds",
-        "description": "All graphical and text elements stay within the defined viewBox dimensions.",
+        "description": "All graphical and text elements stay within the defined viewBox dimensions (transform-aware).",
         "passed": true,
-        "details": "ViewBox [0, 0, 800, 600] verified. All checked elements fit inside."
+        "details": "ViewBox [0, 0, 800, 600] verified. All transform-projected elements fit inside."
       },
       {
         "id": "title-and-labels",
@@ -282,7 +315,14 @@
         "name": "Visual Richness (Custom Check)",
         "description": "Contains at least 3 vector shapes (<path>, <circle>, <rect>, etc.) and responsive viewBox.",
         "passed": true,
-        "details": "Passed: High graphic richness with 43 vector shapes [path (1), circle (32), rect (9), polygon (1)] and responsive viewBox."
+        "details": "Passed: Graphic richness with 43 vector shapes [path (1), circle (32), rect (9), polygon (1)] and responsive viewBox."
+      },
+      {
+        "id": "no-overlapping-labels",
+        "name": "Zero Label Collisions",
+        "description": "Ensures text labels do not collide or render directly over each other.",
+        "passed": true,
+        "details": "Passed: All text labels have distinct, non-overlapping coordinates."
       }
     ],
     "allChecksPassed": true,
@@ -292,6 +332,6 @@
     "totalTokens": 1338,
     "costUSD": 0.000312,
     "retryCount": 0,
-    "timestamp": "2026-11-23T19:19:38.867Z"
+    "timestamp": "2026-11-23T20:45:26.247Z"
   }
 ]
