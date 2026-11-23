@@ -250,6 +250,8 @@ export default function Home() {
                   onRegenerateLive={(d) => {
                     setIsGeneratorOpen(true);
                   }}
+                  onDiagramUpdated={handleDiagramGenerated}
+                  apiKey={apiKey}
                 />
               ))}
             </AnimatePresence>

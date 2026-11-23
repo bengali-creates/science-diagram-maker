@@ -51,49 +51,49 @@ const DIAGRAM_TEMPLATES = [
   <rect x="10" y="10" width="780" height="580" rx="16" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2" />
 
   <!-- Title & Formula banner -->
-  <text x="400" y="50" text-anchor="middle" class="txt-title">Pythagoras' Theorem: a² + b² = c²</text>
-  <rect x="250" y="70" width="300" height="34" rx="8" fill="#e0f2fe" stroke="#38bdf8" stroke-width="1.5" />
-  <text x="400" y="93" text-anchor="middle" class="txt-math" fill="#0369a1">Area(c²) = Area(a²) + Area(b²)</text>
+  <text x="400" y="45" text-anchor="middle" class="txt-title">Pythagoras' Theorem: a² + b² = c²</text>
+  <rect x="250" y="65" width="300" height="34" rx="8" fill="#e0f2fe" stroke="#38bdf8" stroke-width="1.5" />
+  <text x="400" y="88" text-anchor="middle" class="txt-math" fill="#0369a1">Area(c²) = Area(a²) + Area(b²)</text>
 
   <!-- Side a square (Base = 120px, 3x3 grid) -->
-  <rect x="250" y="340" width="120" height="120" fill="url(#sqAGrad)" fill-opacity="0.25" stroke="#10b981" stroke-width="2.5" />
-  <line x1="290" y1="340" x2="290" y2="460" stroke="#10b981" stroke-width="1" stroke-opacity="0.4" />
-  <line x1="330" y1="340" x2="330" y2="460" stroke="#10b981" stroke-width="1" stroke-opacity="0.4" />
-  <line x1="250" y1="380" x2="370" y2="380" stroke="#10b981" stroke-width="1" stroke-opacity="0.4" />
-  <line x1="250" y1="420" x2="370" y2="420" stroke="#10b981" stroke-width="1" stroke-opacity="0.4" />
-  <text x="310" y="405" text-anchor="middle" class="txt-label" fill="#065f46">Square a² = 9</text>
+  <rect x="250" y="400" width="120" height="120" fill="url(#sqAGrad)" fill-opacity="0.25" stroke="#10b981" stroke-width="2.5" />
+  <line x1="290" y1="400" x2="290" y2="520" stroke="#10b981" stroke-width="1" stroke-opacity="0.4" />
+  <line x1="330" y1="400" x2="330" y2="520" stroke="#10b981" stroke-width="1" stroke-opacity="0.4" />
+  <line x1="250" y1="440" x2="370" y2="440" stroke="#10b981" stroke-width="1" stroke-opacity="0.4" />
+  <line x1="250" y1="480" x2="370" y2="480" stroke="#10b981" stroke-width="1" stroke-opacity="0.4" />
+  <text x="310" y="465" text-anchor="middle" class="txt-label" fill="#065f46">Square a² = 9</text>
 
   <!-- Side b square (Height = 160px, 4x4 grid) -->
-  <rect x="90" y="180" width="160" height="160" fill="url(#sqBGrad)" fill-opacity="0.25" stroke="#f59e0b" stroke-width="2.5" />
-  <line x1="130" y1="180" x2="130" y2="340" stroke="#f59e0b" stroke-width="1" stroke-opacity="0.4" />
-  <line x1="170" y1="180" x2="170" y2="340" stroke="#f59e0b" stroke-width="1" stroke-opacity="0.4" />
-  <line x1="210" y1="180" x2="210" y2="340" stroke="#f59e0b" stroke-width="1" stroke-opacity="0.4" />
-  <line x1="90" y1="220" x2="250" y2="220" stroke="#f59e0b" stroke-width="1" stroke-opacity="0.4" />
-  <line x1="90" y1="260" x2="250" y2="260" stroke="#f59e0b" stroke-width="1" stroke-opacity="0.4" />
-  <line x1="90" y1="300" x2="250" y2="300" stroke="#f59e0b" stroke-width="1" stroke-opacity="0.4" />
-  <text x="170" y="265" text-anchor="middle" class="txt-label" fill="#92400e">Square b² = 16</text>
+  <rect x="90" y="240" width="160" height="160" fill="url(#sqBGrad)" fill-opacity="0.25" stroke="#f59e0b" stroke-width="2.5" />
+  <line x1="130" y1="240" x2="130" y2="400" stroke="#f59e0b" stroke-width="1" stroke-opacity="0.4" />
+  <line x1="170" y1="240" x2="170" y2="400" stroke="#f59e0b" stroke-width="1" stroke-opacity="0.4" />
+  <line x1="210" y1="240" x2="210" y2="400" stroke="#f59e0b" stroke-width="1" stroke-opacity="0.4" />
+  <line x1="90" y1="280" x2="250" y2="280" stroke="#f59e0b" stroke-width="1" stroke-opacity="0.4" />
+  <line x1="90" y1="320" x2="250" y2="320" stroke="#f59e0b" stroke-width="1" stroke-opacity="0.4" />
+  <line x1="90" y1="360" x2="250" y2="360" stroke="#f59e0b" stroke-width="1" stroke-opacity="0.4" />
+  <text x="170" y="325" text-anchor="middle" class="txt-label" fill="#92400e">Square b² = 16</text>
 
   <!-- Right-Angled Triangle -->
-  <polygon points="250,340 370,340 250,180" fill="#6366f1" fill-opacity="0.15" stroke="#4f46e5" stroke-width="3" />
+  <polygon points="250,400 370,400 250,240" fill="#6366f1" fill-opacity="0.15" stroke="#4f46e5" stroke-width="3" />
 
   <!-- 90 degree indicator square -->
-  <rect x="250" y="325" width="15" height="15" fill="none" stroke="#4f46e5" stroke-width="2" />
-  <circle cx="257" cy="332" r="1.5" fill="#4f46e5" />
+  <rect x="250" y="385" width="15" height="15" fill="none" stroke="#4f46e5" stroke-width="2" />
+  <circle cx="257" cy="392" r="1.5" fill="#4f46e5" />
 
-  <!-- Hypotenuse square c (Hypotenuse = 200px, 5x5 grid rotated) -->
-  <g transform="translate(370, 340) rotate(-126.87)" class="anim-pulse">
+  <!-- Hypotenuse square c (Hypotenuse = 200px, 5x5 grid rotated, clearance y>=120 well below banner y=99) -->
+  <g transform="translate(370, 400) rotate(-126.87)" class="anim-pulse">
     <rect x="0" y="0" width="200" height="200" fill="url(#hypoGrad)" fill-opacity="0.3" stroke="#2563eb" stroke-width="3" />
     <text x="100" y="105" text-anchor="middle" transform="rotate(126.87 100 105)" class="txt-label" fill="#1e40af">Hypotenuse Square c² = 25</text>
   </g>
 
   <!-- Hypotenuse flowing dashed path -->
-  <line x1="250" y1="180" x2="370" y2="340" stroke="#2563eb" stroke-width="4" class="anim-dash" />
+  <line x1="250" y1="240" x2="370" y2="400" stroke="#2563eb" stroke-width="4" class="anim-dash" />
 
   <!-- Educational labels & arrows -->
-  <text x="310" y="480" text-anchor="middle" class="txt-label" fill="#047857">Adjacent side a = 3</text>
-  <text x="170" y="165" text-anchor="middle" class="txt-label" fill="#b45309">Opposite side b = 4</text>
-  <text x="500" y="360" text-anchor="start" class="txt-label" fill="#1d4ed8">Hypotenuse c = 5 (Longest side)</text>
-  <text x="400" y="550" text-anchor="middle" class="txt-label" fill="#475569">GCSE Key Fact: In any right-angled triangle, 3² + 4² = 9 + 16 = 25 = 5²</text>
+  <text x="310" y="555" text-anchor="middle" class="txt-label" fill="#047857">Adjacent side a = 3</text>
+  <text x="170" y="225" text-anchor="middle" class="txt-label" fill="#b45309">Opposite side b = 4</text>
+  <text x="500" y="380" text-anchor="start" class="txt-label" fill="#1d4ed8">Hypotenuse c = 5 (Longest side)</text>
+  <text x="400" y="580" text-anchor="middle" class="txt-label" fill="#475569">GCSE Key Fact: In any right-angled triangle, 3² + 4² = 9 + 16 = 25 = 5²</text>
 </svg>`,
   },
   {

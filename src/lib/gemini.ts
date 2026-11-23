@@ -11,6 +11,8 @@ export interface GenerateOptions {
   promptText: string;
   apiKey?: string;
   modelName?: string;
+  userFeedback?: string; // Human reviewer critique
+  previousSvg?: string;  // SVG to be corrected
 }
 
 export interface GenerationExecutionLog {
@@ -119,6 +121,34 @@ Generate the standalone SVG code now:`;
 }
 
 /**
+ * Builds prompt for human-directed manual retry with specific reviewer instructions
+ */
+function buildHumanRetryPrompt(
+  concept: string,
+  subject: string,
+  promptText: string,
+  previousSvg: string | undefined,
+  userFeedback: string
+): string {
+  return `You are an expert UK GCSE Science teacher and master SVG designer.
+A human curriculum reviewer inspected your previous animated SVG diagram for "${concept}" (${subject}) and provided feedback to resolve.
+
+HUMAN REVIEWER INSTRUCTIONS:
+"${userFeedback}"
+
+ORIGINAL CURRICULUM TEXT:
+"${promptText}"
+
+${previousSvg ? `PREVIOUS SVG TO REVISE:\n${previousSvg.slice(0, 1500)}...` : ""}
+
+REVISE AND FIX:
+1. Return ONLY the raw SVG code starting with <svg> and ending with </svg>. No markdown backticks.
+2. Directly solve the reviewer's instructions: ensure all labels, shapes, and texts have clean clearance with ZERO collisions or overlaps.
+3. Keep viewBox="0 0 800 600" width="100%" height="100%".
+4. Ensure at least 3 descriptive <text> labels and active SMIL/CSS motion.`;
+}
+
+/**
  * Builds the retry prompt providing targeted validation feedback
  */
 function buildRetryPrompt(
@@ -142,11 +172,12 @@ Remember:
 - Ensure viewBox="0 0 800 600".
 - Must include <title> and at least 3 descriptive <text> labels.
 - Must have at least one active SMIL or CSS @keyframes animation.
-- All coordinates must remain strictly inside (0, 0, 800, 600).`;
+- All coordinates must remain strictly inside (0, 0, 800, 600).
+- ZERO element collisions: no overlapping labels or clipping shapes!`;
 }
 
 /**
- * Generates an animated science diagram with automated validation & 1-time retry on failure
+ * Generates an animated science diagram with automated validation & retry on failure
  */
 export async function generateScienceDiagram(
   options: GenerateOptions
@@ -171,35 +202,65 @@ export async function generateScienceDiagram(
   let totalApiRetries = 0;
   let validationRetries = 0;
   const errorsLogged: string[] = [];
+  const retryHistory: DiagramResult["retryHistory"] = [];
 
-  // Step 1: Initial call
-  const initialPrompt = buildInitialPrompt(
-    options.conceptName,
-    options.subject,
-    options.promptText
-  );
+  // Determine prompt: Human reviewer retry OR Initial prompt
+  const isHumanRetry = Boolean(options.userFeedback && options.userFeedback.trim());
+  const primaryPrompt = isHumanRetry
+    ? buildHumanRetryPrompt(
+        options.conceptName,
+        options.subject,
+        options.promptText,
+        options.previousSvg,
+        options.userFeedback!
+      )
+    : buildInitialPrompt(
+        options.conceptName,
+        options.subject,
+        options.promptText
+      );
+
+  if (isHumanRetry) {
+    retryHistory.push({
+      attemptNumber: 1,
+      trigger: "manual_reviewer",
+      timestamp: new Date().toISOString(),
+      feedback: [options.userFeedback!],
+      userCritique: options.userFeedback!,
+      checksPassed: false,
+    });
+  }
 
   const initialResponse = await callGeminiWithBackoff(
     genAI,
     modelName,
-    initialPrompt
+    primaryPrompt
   );
 
   totalInputTokens += initialResponse.inputTokens;
   totalOutputTokens += initialResponse.outputTokens;
   totalApiRetries += initialResponse.apiRetries;
 
-  // Step 2: Validate SVG
+  // Validate SVG
   let validation = validateSvg(initialResponse.text);
 
-  // Step 3: If validation failed, retry once with targeted feedback
+  // If validation failed, auto-retry once with targeted feedback
   if (!validation.isValid) {
     validationRetries = 1;
     errorsLogged.push(...validation.feedbackForRetry);
     console.warn(
-      `[Validation Failed] Concept "${options.conceptName}". Retrying once with feedback:`,
+      `[Validation Failed] Concept "${options.conceptName}". Auto-retrying once with feedback:`,
       validation.feedbackForRetry
     );
+
+    retryHistory.push({
+      attemptNumber: retryHistory.length + 1,
+      trigger: "auto_validation",
+      timestamp: new Date().toISOString(),
+      feedback: validation.feedbackForRetry,
+      checksPassed: false,
+      failedCheckNames: validation.checkDetails.filter((c) => !c.passed).map((c) => c.name),
+    });
 
     const retryPrompt = buildRetryPrompt(
       options.conceptName,
@@ -222,6 +283,16 @@ export async function generateScienceDiagram(
 
       const retryValidation = validateSvg(retryResponse.text);
       validation = retryValidation;
+
+      if (retryValidation.isValid) {
+        retryHistory.push({
+          attemptNumber: retryHistory.length + 1,
+          trigger: "auto_validation",
+          timestamp: new Date().toISOString(),
+          feedback: ["All 6 checks passed successfully on auto-retry."],
+          checksPassed: true,
+        });
+      }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       errorsLogged.push(`Retry call failed: ${msg}`);
@@ -245,7 +316,13 @@ export async function generateScienceDiagram(
     outputTokens: totalOutputTokens,
     totalTokens,
     costUSD,
-    retryCount: totalApiRetries + validationRetries,
+    retryCount: (isHumanRetry ? 1 : 0) + totalApiRetries + validationRetries,
+    retryHistory,
+    lastFeedback: isHumanRetry
+      ? options.userFeedback
+      : validation.feedbackForRetry.length > 0
+      ? validation.feedbackForRetry.join("; ")
+      : undefined,
     timestamp: new Date().toISOString(),
   };
 

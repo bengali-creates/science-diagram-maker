@@ -565,11 +565,12 @@ export function validateSvg(rawInput: string): SvgValidationResult {
     customDetail = "Cannot check graphic richness due to invalid XML.";
   }
 
-  // Check 6: Text-on-Text Collision & Overlap Detector
+  // Check 6: Comprehensive Collision & Overlap Detector (Text-on-Text and Shape-on-Shape)
   let noOverlappingLabels = true;
-  let overlapDetail = "No text label overlaps detected.";
+  let overlapDetail = "No collisions or label overlaps detected.";
   const collidingPairs: string[] = [];
 
+  // 1. Text-on-Text pairwise overlap
   for (let i = 0; i < textBoxes.length; i++) {
     for (let j = i + 1; j < textBoxes.length; j++) {
       const b1 = textBoxes[i];
@@ -582,18 +583,79 @@ export function validateSvg(rawInput: string): SvgValidationResult {
 
       if (overlapsX && overlapsY) {
         noOverlappingLabels = false;
-        collidingPairs.push(`"${b1.text.slice(0, 15)}" collides with "${b2.text.slice(0, 15)}"`);
+        collidingPairs.push(`Text "${b1.text.slice(0, 15)}" collides with Text "${b2.text.slice(0, 15)}"`);
+      }
+    }
+  }
+
+  // 2. Shape-on-Shape / Card-on-Shape overlap check (excluding canvas container)
+  if (xmlDoc && xmlValid) {
+    const rectEls = xmlDoc.documentElement.getElementsByTagName("rect");
+    const prominentBoxes: Array<{ name: string; minX: number; maxX: number; minY: number; maxY: number }> = [];
+
+    for (let i = 0; i < rectEls.length; i++) {
+      const r = rectEls[i];
+      const m = getCumulativeTransform(r);
+      const x = parseFloat(r.getAttribute("x") || "0");
+      const y = parseFloat(r.getAttribute("y") || "0");
+      const w = parseFloat(r.getAttribute("width") || "0");
+      const h = parseFloat(r.getAttribute("height") || "0");
+
+      // Skip background container
+      if (w >= 700 || h >= 500) continue;
+
+      const corners = [
+        applyTransformToPoint(m, x, y),
+        applyTransformToPoint(m, x + w, y),
+        applyTransformToPoint(m, x, y + h),
+        applyTransformToPoint(m, x + w, y + h),
+      ];
+
+      const minX = Math.min(...corners.map((p) => p.x));
+      const maxX = Math.max(...corners.map((p) => p.x));
+      const minY = Math.min(...corners.map((p) => p.y));
+      const maxY = Math.max(...corners.map((p) => p.y));
+
+      prominentBoxes.push({
+        name: `Shape [${Math.round(minX)}, ${Math.round(minY)}]`,
+        minX,
+        maxX,
+        minY,
+        maxY,
+      });
+    }
+
+    // Check if prominent elements like formula banners or cards collide with rotated content
+    for (let i = 0; i < prominentBoxes.length; i++) {
+      for (let j = i + 1; j < prominentBoxes.length; j++) {
+        const s1 = prominentBoxes[i];
+        const s2 = prominentBoxes[j];
+
+        // Check for partial boundary clipping / collision (not full containment)
+        const s1ContainsS2 = s1.minX <= s2.minX && s1.maxX >= s2.maxX && s1.minY <= s2.minY && s1.maxY >= s2.maxY;
+        const s2ContainsS1 = s2.minX <= s1.minX && s2.maxX >= s1.maxX && s2.minY <= s1.minY && s2.maxY >= s1.maxY;
+
+        if (!s1ContainsS2 && !s2ContainsS1) {
+          const overlapX = Math.min(s1.maxX, s2.maxX) - Math.max(s1.minX, s2.minX);
+          const overlapY = Math.min(s1.maxY, s2.maxY) - Math.max(s1.minY, s2.minY);
+
+          // If they partially intersect across boundaries
+          if (overlapX > 15 && overlapY > 15) {
+            noOverlappingLabels = false;
+            collidingPairs.push(`Elements partially overlap across boundaries (${Math.round(overlapX)}x${Math.round(overlapY)}px overlap)`);
+          }
+        }
       }
     }
   }
 
   if (!noOverlappingLabels) {
-    overlapDetail = `Failed: ${collidingPairs.length} text collision(s) detected: ${collidingPairs.slice(0, 2).join(", ")}.`;
+    overlapDetail = `Failed: ${collidingPairs.length} collision(s) detected: ${collidingPairs.slice(0, 2).join("; ")}.`;
     feedback.push(
-      `Text labels must not overlap or collide with each other. Detected overlaps: ${collidingPairs.slice(0, 2).join(", ")}. Reposition text elements with adequate padding.`
+      `Elements and text labels must not collide or overlap. Detected collisions: ${collidingPairs.slice(0, 2).join("; ")}. Reposition elements with adequate clearance.`
     );
   } else {
-    overlapDetail = "Passed: All text labels have distinct, non-overlapping coordinates.";
+    overlapDetail = "Passed: All elements and text labels have distinct, non-overlapping coordinates.";
   }
 
   const allPassed =

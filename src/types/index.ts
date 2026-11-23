@@ -16,6 +16,17 @@ export interface ValidationCheck {
   details?: string;
 }
 
+export interface RetryLogItem {
+  attemptNumber: number;
+  trigger: "auto_validation" | "manual_reviewer";
+  timestamp: string;
+  feedback: string[];
+  userCritique?: string;
+  checksPassed: boolean;
+  failedCheckNames?: string[];
+  costUSD?: number;
+}
+
 export interface DiagramResult {
   id: number;
   concept: string;
@@ -38,6 +49,8 @@ export interface DiagramResult {
   totalTokens: number;
   costUSD: number;
   retryCount: number;
+  retryHistory?: RetryLogItem[];
+  lastFeedback?: string;
   timestamp: string;
 }
 
@@ -54,6 +67,8 @@ export interface GenerationRequest {
   promptText: string;
   apiKey?: string;
   model?: string;
+  userFeedback?: string;
+  previousSvg?: string;
 }
 
 export interface GenerationResponse {

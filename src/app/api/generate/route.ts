@@ -39,6 +39,8 @@ export async function POST(req: NextRequest) {
       promptText: body.promptText,
       apiKey: body.apiKey,
       modelName: body.model,
+      userFeedback: body.userFeedback,
+      previousSvg: body.previousSvg,
     });
 
     return NextResponse.json({

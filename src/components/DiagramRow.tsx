@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import confetti from "canvas-confetti";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Check,
   X,
@@ -12,9 +12,14 @@ import {
   XCircle,
   HelpCircle,
   FileCheck,
+  Wand2,
+  ChevronDown,
+  ChevronUp,
+  History,
 } from "lucide-react";
 import { DiagramResult, ReviewState } from "@/types";
 import { CheckBadge } from "./CheckBadge";
+import { ReviewerRetryModal } from "./ReviewerRetryModal";
 import { formatCost, getSubjectColor } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -27,6 +32,8 @@ interface DiagramRowProps {
   onReviewChange: (conceptId: number, review: ReviewState) => void;
   onInspect: (diagram: DiagramResult) => void;
   onRegenerateLive?: (diagram: DiagramResult) => void;
+  onDiagramUpdated?: (updated: DiagramResult) => void;
+  apiKey?: string;
 }
 
 export function DiagramRow({
@@ -35,9 +42,13 @@ export function DiagramRow({
   onReviewChange,
   onInspect,
   onRegenerateLive,
+  onDiagramUpdated,
+  apiKey = "",
 }: DiagramRowProps) {
   const [note, setNote] = useState(review.note || "");
   const [svgKey, setSvgKey] = useState(0); // for replaying animation
+  const [isRetryModalOpen, setIsRetryModalOpen] = useState(false);
+  const [showAuditTrail, setShowAuditTrail] = useState(false);
   const subjectStyle = getSubjectColor(diagram.subject);
 
   const handleApprove = () => {
@@ -128,6 +139,25 @@ export function DiagramRow({
                 <HelpCircle className="h-3 w-3" /> Needs Review
               </Badge>
             )}
+
+            {/* Visual Retry Badge */}
+            {diagram.retryCount > 0 && (
+              <Badge variant="warning" className="gap-1 font-bold">
+                ⚡ {diagram.retryCount} {diagram.retryCount === 1 ? "Auto-Retry" : "Retries"}
+              </Badge>
+            )}
+
+            {/* Request AI Revision Button */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setIsRetryModalOpen(true)}
+              className="h-8 gap-1 border-amber-500/40 text-amber-600 dark:text-amber-400 hover:bg-amber-500/10 font-bold"
+              title="Open Reviewer AI Retry & Critique Dialog"
+            >
+              <Wand2 className="h-3.5 w-3.5 text-amber-500" />
+              <span className="hidden sm:inline">AI Revision</span>
+            </Button>
 
             {/* Replay SVG Animation Button */}
             <Button
@@ -273,10 +303,102 @@ export function DiagramRow({
                   className="text-xs"
                 />
               </div>
+
+              {/* Collapsible Retry & Audit Trail */}
+              <div className="pt-1 border-t border-border/60">
+                <button
+                  type="button"
+                  onClick={() => setShowAuditTrail(!showAuditTrail)}
+                  className="flex w-full items-center justify-between text-[11px] font-semibold text-muted-foreground hover:text-foreground transition-colors cursor-pointer py-0.5"
+                >
+                  <span className="flex items-center gap-1.5">
+                    <History className="h-3 w-3 text-primary" />
+                    <span>Retry &amp; Validation Audit Trail</span>
+                    {diagram.retryCount > 0 && (
+                      <span className="rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 px-1.5 py-0.2 text-[10px] font-mono">
+                        {diagram.retryCount}
+                      </span>
+                    )}
+                  </span>
+                  {showAuditTrail ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+                </button>
+
+                <AnimatePresence>
+                  {showAuditTrail && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="mt-2 space-y-2 rounded-lg border border-border bg-muted/40 p-2.5 text-[11px]"
+                    >
+                      <div className="flex items-center justify-between text-muted-foreground font-mono text-[10px]">
+                        <span>Model: {diagram.model}</span>
+                        <span>Total Retries: {diagram.retryCount}</span>
+                      </div>
+
+                      {diagram.retryHistory && diagram.retryHistory.length > 0 ? (
+                        <div className="space-y-1.5 pt-1">
+                          {diagram.retryHistory.map((step, idx) => (
+                            <div
+                              key={idx}
+                              className="rounded-md border border-border bg-background p-2 text-[11px]"
+                            >
+                              <div className="flex items-center justify-between font-semibold">
+                                <span className="text-foreground">
+                                  Attempt #{step.attemptNumber} ({step.trigger === "auto_validation" ? "Auto Retry" : "Human Revision"})
+                                </span>
+                                <span
+                                  className={`font-mono text-[10px] ${
+                                    step.checksPassed
+                                      ? "text-emerald-600 dark:text-emerald-400"
+                                      : "text-amber-600 dark:text-amber-400"
+                                  }`}
+                                >
+                                  {step.checksPassed ? "✓ Checks Passed" : "⚠ Checks Failed"}
+                                </span>
+                              </div>
+                              {step.failedCheckNames && step.failedCheckNames.length > 0 && (
+                                <p className="mt-1 text-[10px] text-destructive font-mono">
+                                  Failed: {step.failedCheckNames.join(", ")}
+                                </p>
+                              )}
+                              {step.userCritique && (
+                                <p className="mt-1 text-[10px] text-primary font-medium">
+                                  Reviewer Critique: "{step.userCritique}"
+                                </p>
+                              )}
+                              {step.feedback && step.feedback.length > 0 && (
+                                <p className="mt-1 text-[10px] text-muted-foreground italic">
+                                  Prompt Feedback: "{step.feedback.join("; ")}"
+                                </p>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-[10px] text-muted-foreground italic">
+                          Generated directly in initial pass with 6/6 deterministic AST &amp; collision checks satisfied.
+                        </p>
+                      )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
           </div>
         </div>
       </Card>
+
+      {/* Human AI Revision Dialog */}
+      <ReviewerRetryModal
+        isOpen={isRetryModalOpen}
+        onClose={() => setIsRetryModalOpen(false)}
+        diagram={diagram}
+        apiKey={apiKey}
+        onUpdated={(updated) => {
+          onDiagramUpdated?.(updated);
+        }}
+      />
     </motion.div>
   );
 }
