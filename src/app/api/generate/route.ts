@@ -49,7 +49,10 @@ export async function POST(req: NextRequest) {
     const message = error instanceof Error ? error.message : "An unexpected error occurred.";
     console.error("[API Generate Error]:", message);
 
-    const is429 = message.includes("429") || message.toLowerCase().includes("quota") || message.toLowerCase().includes("resource exhausted");
+    const is429 =
+      message.includes("429") ||
+      message.toLowerCase().includes("quota") ||
+      message.toLowerCase().includes("resource exhausted");
     const statusCode = is429 ? 429 : 500;
 
     return NextResponse.json(
