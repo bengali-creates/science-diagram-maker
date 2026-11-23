@@ -1,69 +1,294 @@
-import Image from "next/image";
+"use client";
+
+import React, { useState, useEffect } from "react";
+import initialResultsData from "@/data/results.json";
+import { DiagramResult, ReviewState } from "@/types";
+import { Header } from "@/components/Header";
+import { StatsBar } from "@/components/StatsBar";
+import { DiagramRow } from "@/components/DiagramRow";
+import { SvgModal } from "@/components/SvgModal";
+import { LiveGeneratorModal } from "@/components/LiveGeneratorModal";
+import { ApiKeyModal, STORAGE_KEY_GEMINI } from "@/components/ApiKeyModal";
+import {
+  loadAllReviews,
+  saveReview,
+  clearAllReviews,
+  exportReviewsJson,
+} from "@/lib/storage";
+import { Download, Sparkles, Filter, CheckCircle2, XCircle, HelpCircle } from "lucide-react";
 
 export default function Home() {
+  const [diagrams, setDiagrams] = useState<DiagramResult[]>(
+    initialResultsData as DiagramResult[]
+  );
+  const [reviews, setReviews] = useState<Record<number, ReviewState>>({});
+  const [activeDiagramForModal, setActiveDiagramForModal] =
+    useState<DiagramResult | null>(null);
+
+  const [isGeneratorOpen, setIsGeneratorOpen] = useState(false);
+  const [isApiKeyOpen, setIsApiKeyOpen] = useState(false);
+  const [apiKey, setApiKey] = useState<string>("");
+  const [filterStatus, setFilterStatus] = useState<
+    "all" | "approved" | "rejected" | "pending"
+  >("all");
+
+  // Load reviews and API key from localStorage on client mount
+  useEffect(() => {
+    const savedReviews = loadAllReviews();
+    setReviews(savedReviews);
+
+    const savedKey = localStorage.getItem(STORAGE_KEY_GEMINI) || "";
+    setApiKey(savedKey);
+  }, []);
+
+  const handleReviewChange = (conceptId: number, review: ReviewState) => {
+    saveReview(conceptId, review);
+    setReviews((prev) => ({
+      ...prev,
+      [conceptId]: review,
+    }));
+  };
+
+  const handleResetReviews = () => {
+    if (confirm("Reset all reviewer decisions and notes in this browser?")) {
+      clearAllReviews();
+      setReviews({});
+    }
+  };
+
+  const handleExportReviews = () => {
+    const jsonStr = exportReviewsJson();
+    const blob = new Blob([jsonStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `udhi-science-diagram-reviews-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleSaveApiKey = (newKey: string) => {
+    setApiKey(newKey);
+    if (typeof window !== "undefined") {
+      if (newKey) {
+        localStorage.setItem(STORAGE_KEY_GEMINI, newKey);
+      } else {
+        localStorage.removeItem(STORAGE_KEY_GEMINI);
+      }
+    }
+  };
+
+  const handleDiagramGenerated = (newResult: DiagramResult) => {
+    setDiagrams((prev) => {
+      const idx = prev.findIndex((d) => d.concept === newResult.concept);
+      if (idx !== -1) {
+        const copy = [...prev];
+        copy[idx] = newResult;
+        return copy;
+      }
+      return [newResult, ...prev];
+    });
+  };
+
+  // Stats calculation
+  const totalCount = diagrams.length;
+  let approvedCount = 0;
+  let rejectedCount = 0;
+  let totalCostUSD = 0;
+  let totalRetries = 0;
+
+  diagrams.forEach((d) => {
+    const rev = reviews[d.id];
+    if (rev?.status === "approved") approvedCount++;
+    if (rev?.status === "rejected") rejectedCount++;
+    totalCostUSD += d.costUSD;
+    totalRetries += d.retryCount;
+  });
+
+  const filteredDiagrams = diagrams.filter((d) => {
+    if (filterStatus === "all") return true;
+    const rev = reviews[d.id];
+    const status = rev?.status || "pending";
+    return status === filterStatus;
+  });
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <div className="min-h-screen bg-[#090d16] text-slate-100 flex flex-col font-sans selection:bg-blue-500/30 selection:text-blue-200">
+      <Header
+        onOpenGenerate={() => setIsGeneratorOpen(true)}
+        onOpenApiKey={() => setIsApiKeyOpen(true)}
+        hasApiKey={!!apiKey}
+        onResetReviews={handleResetReviews}
+      />
+
+      <main className="flex-1 mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 space-y-8">
+        {/* Hero & Intro Section */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800/80 pb-6">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-blue-500/20 bg-blue-500/10 px-3 py-1 text-xs font-semibold text-blue-400 mb-2">
+              <Sparkles className="h-3.5 w-3.5" />
+              <span>AI Diagram Verification Dashboard</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+              UK GCSE Science Diagram Reviewer
+            </h2>
+            <p className="mt-1 text-sm text-slate-400 max-w-2xl">
+              Each animated SVG diagram is generated by Gemini Flash, strictly verified
+              by 5 automated code checks (parseability, viewBox limits, title/labels, animations, and vector richness),
+              with one-time feedback retry loops.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2.5">
+            <button
+              onClick={handleExportReviews}
+              className="flex items-center gap-1.5 rounded-xl border border-slate-800 bg-slate-900/80 px-3.5 py-2 text-xs font-semibold text-slate-300 hover:bg-slate-800 hover:text-white transition-all shadow-sm"
+              title="Download reviewer decisions as JSON"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              <Download className="h-4 w-4 text-slate-400" />
+              <span>Export Decisions</span>
+            </button>
+
+            <button
+              onClick={() => setIsGeneratorOpen(true)}
+              className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-blue-500/25 hover:from-blue-500 hover:to-indigo-500 transition-all active:scale-95"
             >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+              <Sparkles className="h-4 w-4" />
+              <span>Test Live Generation</span>
+            </button>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
+
+        {/* Global Performance & Review Stats */}
+        <StatsBar
+          totalCount={totalCount}
+          approvedCount={approvedCount}
+          rejectedCount={rejectedCount}
+          totalCostUSD={totalCostUSD}
+          totalRetries={totalRetries}
+          model={diagrams[0]?.model || "gemini-2.5-flash"}
+        />
+
+        {/* Filter & Status Bar */}
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-1">
+              <Filter className="h-3.5 w-3.5 text-blue-400" />
+              Filter by Review Verdict:
+            </span>
+            <div className="flex rounded-lg border border-slate-800 bg-slate-950 p-1 text-xs">
+              <button
+                onClick={() => setFilterStatus("all")}
+                className={`rounded-md px-2.5 py-1 font-medium transition-colors ${
+                  filterStatus === "all"
+                    ? "bg-blue-600 text-white"
+                    : "text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                All ({totalCount})
+              </button>
+              <button
+                onClick={() => setFilterStatus("approved")}
+                className={`flex items-center gap-1 rounded-md px-2.5 py-1 font-medium transition-colors ${
+                  filterStatus === "approved"
+                    ? "bg-emerald-600 text-white"
+                    : "text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                <CheckCircle2 className="h-3 w-3 text-emerald-400" />
+                Approved ({approvedCount})
+              </button>
+              <button
+                onClick={() => setFilterStatus("rejected")}
+                className={`flex items-center gap-1 rounded-md px-2.5 py-1 font-medium transition-colors ${
+                  filterStatus === "rejected"
+                    ? "bg-rose-600 text-white"
+                    : "text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                <XCircle className="h-3 w-3 text-rose-400" />
+                Rejected ({rejectedCount})
+              </button>
+              <button
+                onClick={() => setFilterStatus("pending")}
+                className={`flex items-center gap-1 rounded-md px-2.5 py-1 font-medium transition-colors ${
+                  filterStatus === "pending"
+                    ? "bg-slate-700 text-white"
+                    : "text-slate-400 hover:text-slate-200"
+                }`}
+              >
+                <HelpCircle className="h-3 w-3" />
+                Pending ({totalCount - approvedCount - rejectedCount})
+              </button>
+            </div>
+          </div>
+
+          <span className="text-xs text-slate-500">
+            Showing {filteredDiagrams.length} of {totalCount} science concepts
+          </span>
+        </div>
+
+        {/* 5 Concepts Diagram Table Rows */}
+        <div className="space-y-6">
+          {filteredDiagrams.map((diagram) => (
+            <DiagramRow
+              key={diagram.id}
+              diagram={diagram}
+              review={reviews[diagram.id] || { status: "pending", note: "" }}
+              onReviewChange={handleReviewChange}
+              onInspect={(d) => setActiveDiagramForModal(d)}
+              onRegenerateLive={(d) => {
+                setIsGeneratorOpen(true);
+              }}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          ))}
+
+          {filteredDiagrams.length === 0 && (
+            <div className="rounded-2xl border border-dashed border-slate-800 p-12 text-center text-slate-400">
+              <p className="text-sm">No diagrams match the "{filterStatus}" filter.</p>
+              <button
+                onClick={() => setFilterStatus("all")}
+                className="mt-2 text-xs font-semibold text-blue-400 hover:underline"
+              >
+                Reset filter to show all
+              </button>
+            </div>
+          )}
         </div>
       </main>
+
+      {/* Footer */}
+      <footer className="border-t border-slate-800/80 bg-slate-950/60 py-6 text-center text-xs text-slate-500">
+        <p>
+          Udhi Technologies — AI-generated Animated Science Diagrams for UK GCSE Students
+        </p>
+        <p className="mt-1 text-[11px] text-slate-600">
+          Built with Next.js, Tailwind CSS, Google Gemini Flash, and deterministic SVG verification engines.
+        </p>
+      </footer>
+
+      {/* Modals */}
+      <SvgModal
+        diagram={activeDiagramForModal}
+        onClose={() => setActiveDiagramForModal(null)}
+      />
+
+      <LiveGeneratorModal
+        isOpen={isGeneratorOpen}
+        onClose={() => setIsGeneratorOpen(false)}
+        onGenerated={handleDiagramGenerated}
+        apiKey={apiKey}
+        onOpenApiKey={() => setIsApiKeyOpen(true)}
+      />
+
+      <ApiKeyModal
+        isOpen={isApiKeyOpen}
+        onClose={() => setIsApiKeyOpen(false)}
+        onSave={handleSaveApiKey}
+        currentKey={apiKey}
+      />
     </div>
   );
 }
