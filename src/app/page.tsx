@@ -168,7 +168,7 @@ export default function Home() {
           rejectedCount={rejectedCount}
           totalCostUSD={totalCostUSD}
           totalRetries={totalRetries}
-          model={diagrams[0]?.model || "gemini-2.5-flash"}
+          model={diagrams[0]?.model || "gemini-3.5-flash-lite"}
         />
 
         {/* Filter & Status Bar */}

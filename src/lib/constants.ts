@@ -49,5 +49,5 @@ export const SCIENCE_CONCEPTS: ConceptDefinition[] = [
 export const GEMINI_FLASH_INPUT_COST_PER_TOKEN = 0.075 / 1_000_000;
 export const GEMINI_FLASH_OUTPUT_COST_PER_TOKEN = 0.3 / 1_000_000;
 
-export const DEFAULT_MODEL = "gemini-2.5-flash";
-export const FALLBACK_MODELS = ["gemini-1.5-flash", "gemini-2.0-flash"];
+export const DEFAULT_MODEL = "gemini-3.5-flash-lite";
+export const FALLBACK_MODELS = ["gemini-3.5-flash"];

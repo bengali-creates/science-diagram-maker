@@ -50,7 +50,7 @@
       }
     ],
     "allChecksPassed": true,
-    "model": "gemini-2.5-flash",
+    "model": "gemini-3.5-flash-lite",
     "inputTokens": 382,
     "outputTokens": 894,
     "totalTokens": 1276,
@@ -109,7 +109,7 @@
       }
     ],
     "allChecksPassed": true,
-    "model": "gemini-2.5-flash",
+    "model": "gemini-3.5-flash-lite",
     "inputTokens": 395,
     "outputTokens": 852,
     "totalTokens": 1247,
@@ -168,7 +168,7 @@
       }
     ],
     "allChecksPassed": true,
-    "model": "gemini-2.5-flash",
+    "model": "gemini-3.5-flash-lite",
     "inputTokens": 410,
     "outputTokens": 915,
     "totalTokens": 1325,
@@ -227,7 +227,7 @@
       }
     ],
     "allChecksPassed": true,
-    "model": "gemini-2.5-flash",
+    "model": "gemini-3.5-flash-lite",
     "inputTokens": 388,
     "outputTokens": 880,
     "totalTokens": 1268,
@@ -286,7 +286,7 @@
       }
     ],
     "allChecksPassed": true,
-    "model": "gemini-2.5-flash",
+    "model": "gemini-3.5-flash-lite",
     "inputTokens": 398,
     "outputTokens": 940,
     "totalTokens": 1338,

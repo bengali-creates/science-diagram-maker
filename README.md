@@ -17,7 +17,7 @@ A full-stack Next.js web application built for the **Udhi Technologies Home Assi
 | :--- | :--- | :--- |
 | **Framework** | **Next.js 14+ (App Router, TypeScript)** | Modern React framework, fast Turbopack compilation, API routes for secure key handling, seamless Vercel deployment. |
 | **Styling** | **Tailwind CSS + Dark/Light Theme Tokens** | High-contrast, accessibility-focused UI designed specifically to eliminate "generic AI slop" with crisp layout, badges, and smooth micro-interactions. |
-| **AI Model** | **Google Gemini 2.5 Flash (`gemini-2.5-flash`)** | Low-latency, cost-effective multimodal model with high reasoning ability on SVG vector code and animation syntax. |
+| **AI Model** | **Google Gemini 3.5 Flash Lite (`gemini-3.5-flash-lite`)** | Best free tier limits, low latency, cost-effective multimodal model with high reasoning ability on SVG vector code and animation syntax. Optional fallback to `gemini-3.5-flash`. |
 | **SVG Engine** | **`xmldom` + Custom AST Boundary Validators** | Deterministic code-based parsing running both server-side and client-side without heavy headless browser overhead. |
 | **Persistence** | **Browser `localStorage` + `results.json`** | Instant, zero-latency client storage ensuring reviewer choices survive page refreshes with zero database configuration. `results.json` provides preloaded zero-API startup. |
 
@@ -143,8 +143,8 @@ For saving reviewer decisions (**Approve** / **Reject** and the **Reviewer Note*
 
 ## 🤖 Which AI Tools Were Used, and For What
 
-- **Google Gemini 2.5 Flash**:
-  - Used via API as the core generative engine to draw and animate SVG diagrams from natural language curriculum prompts.
+- **Google Gemini 3.5 Flash Lite (`gemini-3.5-flash-lite`) / Gemini 3.5 Flash**:
+  - Used via API as the core generative engine to draw and animate SVG diagrams from natural language curriculum prompts. Best free tier quota on Google AI Studio.
 - **Antigravity (Google DeepMind Agent)**:
   - Used for rapid project architecture scaffolding, deterministic SVG test suite creation, responsive Next.js frontend development, and Git commit management.
 

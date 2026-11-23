@@ -225,9 +225,8 @@ export function LiveGeneratorModal({
                 onChange={(e) => setSelectedModel(e.target.value)}
                 className="rounded-lg border border-slate-800 bg-slate-900 px-2.5 py-1 text-xs text-slate-200 focus:border-blue-500 focus:outline-none"
               >
-                <option value="gemini-2.5-flash">gemini-2.5-flash (Recommended)</option>
-                <option value="gemini-1.5-flash">gemini-1.5-flash</option>
-                <option value="gemini-2.0-flash">gemini-2.0-flash</option>
+                <option value="gemini-3.5-flash-lite">gemini-3.5-flash-lite (Best Free Limits)</option>
+                <option value="gemini-3.5-flash">gemini-3.5-flash (Standard)</option>
               </select>
             </div>
 
