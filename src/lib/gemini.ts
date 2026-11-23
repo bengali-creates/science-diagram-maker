@@ -1,7 +1,8 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { DiagramResult, Subject } from "@/types";
 import { validateSvg } from "./svg-validator";
-import { calculateCost, DEFAULT_MODEL } from "./constants";
+import { DEFAULT_MODEL } from "./constants";
+import { calculateCost } from "./utils";
 
 export interface GenerateOptions {
   conceptId?: number;
