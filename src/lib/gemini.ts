@@ -103,8 +103,8 @@ async function callGeminiWithStreamingAndFallback(
     }
 
     let attempt = 0;
-    const maxAttemptsForThisModel = isFallbackAttempt ? 1 : 2;
-    let delay = 2000;
+    const maxAttemptsForThisModel = isFallbackAttempt ? 1 : 1; // On 503/429, fall back promptly to the alternate model
+    let delay = 1500;
 
     while (attempt <= maxAttemptsForThisModel) {
       try {
@@ -114,58 +114,34 @@ async function callGeminiWithStreamingAndFallback(
             temperature: 0.2, // Low temperature for deterministic code output
           },
         });
-        let accumulatedText = "";
-        try {
-          const resultStream = await model.generateContentStream(fullPrompt);
-          for await (const chunk of resultStream.stream) {
-            const piece = chunk.text();
-            accumulatedText += piece;
-            callbacks?.onStream?.(piece);
-          }
 
-          const response = await resultStream.response;
-          const usage = response.usageMetadata || {
-            promptTokenCount: Math.ceil(fullPrompt.length / 4),
-            candidatesTokenCount: Math.ceil(accumulatedText.length / 4),
-            totalTokenCount: Math.ceil((fullPrompt.length + accumulatedText.length) / 4),
-          };
+        // Direct generateContent call: immune to SDK SSE stream parser crashes and unhandledRejections on Vercel
+        const response = await model.generateContent(fullPrompt);
+        const candidates = response.response;
+        const text = candidates.text();
 
-          return {
-            text: accumulatedText,
-            inputTokens: usage.promptTokenCount || 0,
-            outputTokens: usage.candidatesTokenCount || 0,
-            apiRetries: totalApiRetries,
-            modelUsed: currentModel,
-            modelSwitched: isFallbackAttempt,
-          };
-        } catch (streamErr: unknown) {
-          const streamMsg = streamErr instanceof Error ? streamErr.message : String(streamErr);
-          console.warn(
-            `[Gemini Stream Fallback] SSE stream parsing issue on ${currentModel}: ${streamMsg}. Falling back to direct generateContent...`
-          );
-          const directResponse = await model.generateContent(fullPrompt);
-          const candidates = directResponse.response;
-          const text = candidates.text();
-          const chunkSize = 80;
+        // Deliver text in chunks to client so the browser live terminal renders smooth real-time typing
+        if (callbacks?.onStream) {
+          const chunkSize = 75;
           for (let i = 0; i < text.length; i += chunkSize) {
-            callbacks?.onStream?.(text.slice(i, i + chunkSize));
+            callbacks.onStream(text.slice(i, i + chunkSize));
           }
-
-          const usage = candidates.usageMetadata || {
-            promptTokenCount: Math.ceil(fullPrompt.length / 4),
-            candidatesTokenCount: Math.ceil(text.length / 4),
-            totalTokenCount: Math.ceil((fullPrompt.length + text.length) / 4),
-          };
-
-          return {
-            text,
-            inputTokens: usage.promptTokenCount || 0,
-            outputTokens: usage.candidatesTokenCount || 0,
-            apiRetries: totalApiRetries,
-            modelUsed: currentModel,
-            modelSwitched: isFallbackAttempt,
-          };
         }
+
+        const usage = candidates.usageMetadata || {
+          promptTokenCount: Math.ceil(fullPrompt.length / 4),
+          candidatesTokenCount: Math.ceil(text.length / 4),
+          totalTokenCount: Math.ceil((fullPrompt.length + text.length) / 4),
+        };
+
+        return {
+          text,
+          inputTokens: usage.promptTokenCount || 0,
+          outputTokens: usage.candidatesTokenCount || 0,
+          apiRetries: totalApiRetries,
+          modelUsed: currentModel,
+          modelSwitched: isFallbackAttempt,
+        };
       } catch (err: unknown) {
         const errorMsg = err instanceof Error ? err.message : String(err);
         lastError = err instanceof Error ? err : new Error(errorMsg);
@@ -173,10 +149,10 @@ async function callGeminiWithStreamingAndFallback(
         if (isRateLimitOrOverload(errorMsg)) {
           totalApiRetries++;
           attempt++;
-          if (attempt <= maxAttemptsForThisModel) {
+          if (attempt <= maxAttemptsForThisModel && !isFallbackAttempt) {
             callbacks?.onStatus?.({
               type: "step",
-              message: `[${currentModel}] Rate limit/503 encountered. Retrying in ${delay / 1000}s...`,
+              message: `[${currentModel}] 503 High Demand encountered. Retrying in ${delay / 1000}s...`,
             });
             console.warn(
               `[Gemini API] Received 429/503 on ${currentModel}. Retrying in ${delay}ms...`,
@@ -187,7 +163,7 @@ async function callGeminiWithStreamingAndFallback(
             continue;
           } else {
             console.warn(
-              `[Gemini API] Exhausted retries on ${currentModel}. Trying alternative model...`
+              `[Gemini API] Switching away from ${currentModel} to alternate model due to demand spike.`
             );
             break;
           }
