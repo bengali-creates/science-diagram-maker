@@ -66,6 +66,9 @@ export async function POST(req: NextRequest) {
               modelName: body.model,
               userFeedback: body.userFeedback,
               previousSvg: body.previousSvg,
+              attemptNumber: body.attemptNumber,
+              maxAttempts: body.maxAttempts,
+              maxRetries: 0, // Client orchestrates fast individual passes (12s each) to eliminate Vercel timeouts
               onStream: (chunk) => {
                 send({ type: "chunk", text: chunk });
               },

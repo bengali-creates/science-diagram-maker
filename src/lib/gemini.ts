@@ -19,6 +19,8 @@ export interface GenerateOptions {
   modelName?: string;
   userFeedback?: string; // Human reviewer critique
   previousSvg?: string;  // SVG to be corrected
+  attemptNumber?: number;
+  maxAttempts?: number;
   maxRetries?: number;   // Maximum automated validation retries (defaults to 5)
   onStream?: (chunk: string) => void;
   onStatus?: (status: StatusEvent) => void;
@@ -258,7 +260,7 @@ REVISE AND FIX:
 }
 
 
-function summarizeValidationErrors(feedbackItems: string[]): string {
+export function summarizeValidationErrors(feedbackItems: string[]): string {
   if (feedbackItems.length === 0) {
     return "Fix any clipping, overlapping text or missing animation.";
   }
@@ -361,14 +363,18 @@ export async function generateScienceDiagram(
   let validationRetries = 0;
   const errorsLogged: string[] = [];
   const retryHistory: DiagramResult["retryHistory"] = [];
-  const isHumanRetry = Boolean(options.userFeedback && options.userFeedback.trim());
-  const primaryPrompt = isHumanRetry
-    ? buildHumanRetryPrompt(
+  const isRevision = Boolean(
+    options.previousSvg || (options.userFeedback && options.userFeedback.trim())
+  );
+  const primaryPrompt = isRevision
+    ? buildRetryPrompt(
         options.conceptName,
         options.subject,
         options.promptText,
-        options.previousSvg,
-        options.userFeedback!
+        options.userFeedback || "Resolve all collisions and contrast issues.",
+        options.attemptNumber || 1,
+        options.maxAttempts || 5,
+        options.previousSvg
       )
     : buildInitialPrompt(
         options.conceptName,
@@ -376,21 +382,21 @@ export async function generateScienceDiagram(
         options.promptText
       );
 
-  if (isHumanRetry) {
+  if (isRevision) {
     retryHistory.push({
-      attemptNumber: 1,
-      trigger: "manual_reviewer",
+      attemptNumber: options.attemptNumber || 1,
+      trigger: options.userFeedback?.includes("[") ? "auto_validation" : "manual_reviewer",
       timestamp: new Date().toISOString(),
-      feedback: [options.userFeedback!],
-      userCritique: options.userFeedback!,
+      feedback: [options.userFeedback || "Revision request"],
+      userCritique: options.userFeedback,
       checksPassed: false,
     });
   }
 
   options.onStatus?.({
     type: "step",
-    message: isHumanRetry
-      ? `Processing reviewer feedback for "${options.conceptName}"...`
+    message: isRevision
+      ? `Processing diagram revision (Attempt #${options.attemptNumber || 1} of ${options.maxAttempts || 5})...`
       : `Connecting to ${modelName} for "${options.conceptName}"...`,
   });
 
@@ -531,9 +537,9 @@ export async function generateScienceDiagram(
     outputTokens: totalOutputTokens,
     totalTokens,
     costUSD,
-    retryCount: (isHumanRetry ? 1 : 0) + totalApiRetries + validationRetries,
+    retryCount: (isRevision ? 1 : 0) + totalApiRetries + validationRetries,
     retryHistory,
-    lastFeedback: isHumanRetry
+    lastFeedback: isRevision
       ? options.userFeedback
       : validation.feedbackForRetry.length > 0
       ? validation.feedbackForRetry.join("; ")

@@ -69,6 +69,8 @@ export interface GenerationRequest {
   model?: string;
   userFeedback?: string;
   previousSvg?: string;
+  attemptNumber?: number;
+  maxAttempts?: number;
   stream?: boolean;
 }
 

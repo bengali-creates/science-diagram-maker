@@ -18,6 +18,7 @@ import {
 import { SCIENCE_CONCEPTS, DEFAULT_MODEL } from "@/lib/constants";
 import { DiagramResult, Subject } from "@/types";
 import { formatCost, getSubjectColor } from "@/lib/utils";
+import { summarizeValidationErrors } from "@/lib/gemini";
 import { CheckBadge } from "./CheckBadge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -78,77 +79,44 @@ export function LiveGeneratorModal({
     (c) => c.id === selectedConceptId,
   );
 
-  const handleGenerate = async (overrideModel?: string) => {
-    const modelToUse = overrideModel || selectedModel;
-    if (overrideModel) {
-      setSelectedModel(overrideModel);
-    }
-
-    setIsLoading(true);
-    setErrorMessage(null);
-    setIsRateLimit(false);
-    setGeneratedDiagram(null);
-    setLiveOutput("");
-    setActiveModelDisplay(modelToUse);
-    setLiveLogs([
-      {
-        time: new Date().toLocaleTimeString(),
-        message: `Connecting to ${modelToUse}...`,
-        type: "step",
-      },
-    ]);
-
-    const title = isCustom
-      ? customTitle || "Custom Science Diagram"
-      : currentConcept?.concept || "Science Diagram";
-    const subject = isCustom
-      ? customSubject
-      : currentConcept?.subject || "Maths";
-    const promptText = isCustom
-      ? customPrompt
-      : currentConcept?.promptText || "";
-
-    if (!promptText.trim()) {
-      setErrorMessage(
-        "Please provide prompt text describing the science concept.",
-      );
-      setIsLoading(false);
-      return;
-    }
-
+  const executeStreamPass = async (params: {
+    conceptId: number;
+    conceptName: string;
+    subject: Subject;
+    promptText: string;
+    apiKey?: string;
+    model: string;
+    previousSvg?: string;
+    userFeedback?: string;
+    attemptNumber?: number;
+    maxAttempts?: number;
+  }): Promise<{ result?: DiagramResult; error?: string; isRateLimit?: boolean }> => {
     try {
-      setStatusStep(`Querying Gemini (${modelToUse})...`);
-
       const response = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          conceptId: isCustom ? Date.now() : selectedConceptId,
-          conceptName: title,
-          subject,
-          promptText,
-          apiKey: apiKey || undefined,
-          model: modelToUse,
+          ...params,
           stream: true,
         }),
       });
 
       if (!response.ok && response.status !== 200) {
         const errJson = await response.json().catch(() => ({}));
-        const is429 = response.status === 429 || errJson.isRateLimit;
-        if (is429) {
-          setIsRateLimit(true);
-        }
-        throw new Error(errJson.error || `HTTP ${response.status} Error`);
+        return {
+          error: errJson.error || `HTTP ${response.status} Error`,
+          isRateLimit: response.status === 429 || Boolean(errJson.isRateLimit),
+        };
       }
 
       if (!response.body) {
-        throw new Error("No readable stream response received.");
+        return { error: "No readable stream response received." };
       }
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let buffer = "";
+      let finalResult: DiagramResult | undefined;
 
       while (true) {
         const { done, value } = await reader.read();
@@ -209,31 +177,177 @@ export function LiveGeneratorModal({
                 },
               ]);
             } else if (data.type === "done") {
-              setGeneratedDiagram(data.result);
-              setSvgKey((k) => k + 1);
-              onGenerated(data.result);
-              setStatusStep(
-                "Automated validation complete! All checks verified.",
-              );
-              setIsLoading(false);
+              finalResult = data.result;
             } else if (data.type === "error") {
-              const errMsg = data.error || "Generation error.";
-              setErrorMessage(errMsg);
-              if (data.isRateLimit) {
-                setIsRateLimit(true);
-              }
-              setIsLoading(false);
-              return;
+              return {
+                error: data.error || "Generation error.",
+                isRateLimit: Boolean(data.isRateLimit),
+              };
             }
-          } catch (parseErr: unknown) {
-            if (
-              parseErr instanceof Error &&
-              parseErr.message !== "Unexpected end of JSON input"
-            ) {
-              console.warn("SSE parse error:", parseErr);
-            }
+          } catch {
+            // ignore split json chunks
           }
         }
+      }
+
+      return { result: finalResult };
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      const is429 =
+        msg.includes("429") ||
+        msg.includes("503") ||
+        msg.toLowerCase().includes("quota") ||
+        msg.toLowerCase().includes("rate limit") ||
+        msg.toLowerCase().includes("high demand") ||
+        msg.toLowerCase().includes("overloaded");
+      return { error: msg, isRateLimit: is429 };
+    }
+  };
+
+  const handleGenerate = async (overrideModel?: string) => {
+    const modelToUse = overrideModel || selectedModel;
+    if (overrideModel) {
+      setSelectedModel(overrideModel);
+    }
+
+    setIsLoading(true);
+    setErrorMessage(null);
+    setIsRateLimit(false);
+    setGeneratedDiagram(null);
+    setLiveOutput("");
+    setActiveModelDisplay(modelToUse);
+    setLiveLogs([
+      {
+        time: new Date().toLocaleTimeString(),
+        message: `Connecting to ${modelToUse}...`,
+        type: "step",
+      },
+    ]);
+
+    const title = isCustom
+      ? customTitle || "Custom Science Diagram"
+      : currentConcept?.concept || "Science Diagram";
+    const subject = isCustom
+      ? customSubject
+      : currentConcept?.subject || "Maths";
+    const promptText = isCustom
+      ? customPrompt
+      : currentConcept?.promptText || "";
+
+    if (!promptText.trim()) {
+      setErrorMessage(
+        "Please provide prompt text describing the science concept.",
+      );
+      setIsLoading(false);
+      return;
+    }
+
+    const maxRetries = 5;
+    let currentAttempt = 1;
+    let currentSvg: string | undefined = undefined;
+    let feedbackForNext: string | undefined = undefined;
+    let bestDiagram: DiagramResult | null = null;
+    const combinedAuditTrail: NonNullable<DiagramResult["retryHistory"]> = [];
+
+    try {
+      while (currentAttempt <= maxRetries) {
+        const isRetry = currentAttempt > 1;
+        setLiveOutput("");
+
+        if (isRetry) {
+          const retryMsg = `[Auto-Retry ${currentAttempt - 1}/${maxRetries - 1}] Solving batch defects...`;
+          setStatusStep(retryMsg);
+          setLiveLogs((prev) => [
+            ...prev,
+            {
+              time: new Date().toLocaleTimeString(),
+              message: retryMsg,
+              type: "retry",
+            },
+          ]);
+        } else {
+          setStatusStep(`Generating initial diagram with ${modelToUse}...`);
+        }
+
+        const pass = await executeStreamPass({
+          conceptId: isCustom ? Date.now() : selectedConceptId,
+          conceptName: title,
+          subject,
+          promptText,
+          apiKey: apiKey || undefined,
+          model: modelToUse,
+          previousSvg: currentSvg,
+          userFeedback: feedbackForNext,
+          attemptNumber: currentAttempt,
+          maxAttempts: maxRetries,
+        });
+
+        if (pass.error) {
+          setErrorMessage(pass.error);
+          if (pass.isRateLimit) setIsRateLimit(true);
+          break;
+        }
+
+        if (!pass.result) {
+          setErrorMessage("No diagram returned from generation pass.");
+          break;
+        }
+
+        bestDiagram = pass.result;
+        if (pass.result.retryHistory) {
+          combinedAuditTrail.push(...pass.result.retryHistory);
+        }
+
+        if (pass.result.allChecksPassed) {
+          setLiveLogs((prev) => [
+            ...prev,
+            {
+              time: new Date().toLocaleTimeString(),
+              message: `✅ All 6 automated checks passed on attempt #${currentAttempt}!`,
+              type: "validation",
+            },
+          ]);
+          setStatusStep("Automated validation complete! All 6 checks verified.");
+          break;
+        }
+
+        if (currentAttempt < maxRetries) {
+          currentSvg = pass.result.svg;
+          const failedChecks = pass.result.checkDetails.filter((c) => !c.passed);
+          const feedbackList = failedChecks.map(
+            (c) => c.details || c.description || c.name,
+          );
+          feedbackForNext = summarizeValidationErrors(feedbackList);
+
+          setLiveLogs((prev) => [
+            ...prev,
+            {
+              time: new Date().toLocaleTimeString(),
+              message: `Attempt #${currentAttempt}: ${failedChecks.length} check(s) flagged. Auto-retrying with batch summary...`,
+              type: "warning",
+            },
+          ]);
+
+          currentAttempt++;
+          await new Promise((r) => setTimeout(r, 600));
+        } else {
+          setStatusStep(`Completed all ${maxRetries} attempts. Reviewing best diagram.`);
+          break;
+        }
+      }
+
+      if (bestDiagram) {
+        const finalDiagram: DiagramResult = {
+          ...bestDiagram,
+          retryCount: currentAttempt - 1,
+          retryHistory:
+            combinedAuditTrail.length > 0
+              ? combinedAuditTrail
+              : bestDiagram.retryHistory,
+        };
+        setGeneratedDiagram(finalDiagram);
+        setSvgKey((k) => k + 1);
+        onGenerated(finalDiagram);
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
