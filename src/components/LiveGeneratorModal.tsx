@@ -281,9 +281,7 @@ export function LiveGeneratorModal({
                 Live AI Diagram Generator &amp; Verifier
               </h2>
               <p className="text-xs text-muted-foreground">
-                Executes Part A live: calls Gemini, runs 6 code checks,
-                auto-retries up to 5 times with batched multi-check error
-                solving
+                Executes Part A live: calls Gemini, runs 6 code checks, with batched multi-check error solving
               </p>
             </div>
           </div>

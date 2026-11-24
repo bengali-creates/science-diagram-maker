@@ -112,6 +112,7 @@ async function callGeminiWithStreamingAndFallback(
           model: currentModel,
           generationConfig: {
             temperature: 0.2, // Low temperature for deterministic code output
+            maxOutputTokens: 2500, // Capped tokens prevents 70s generation latency and keeps SVGs concise
           },
         });
 
@@ -424,7 +425,8 @@ export async function generateScienceDiagram(
       checkDetails: validation.checkDetails,
     },
   });
-  const maxValidationRetries = options.maxRetries ?? 5;
+  // Auto-retries per serverless invocation: capped at 2 to stay comfortably within Vercel's serverless timeout window
+  const maxValidationRetries = Math.min(options.maxRetries ?? 2, 2);
   while (validationRetries < maxValidationRetries && !validation.isValid) {
     validationRetries++;
     const compactSummary = summarizeValidationErrors(validation.feedbackForRetry);
