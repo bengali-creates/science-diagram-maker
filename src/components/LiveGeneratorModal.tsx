@@ -103,9 +103,18 @@ export function LiveGeneratorModal({
 
       if (!response.ok && response.status !== 200) {
         const errJson = await response.json().catch(() => ({}));
+        const isRateOrDemand =
+          response.status === 429 ||
+          response.status === 503 ||
+          response.status === 504 ||
+          Boolean(errJson.isRateLimit);
         return {
-          error: errJson.error || `HTTP ${response.status} Error`,
-          isRateLimit: response.status === 429 || Boolean(errJson.isRateLimit),
+          error:
+            errJson.error ||
+            (response.status === 503
+              ? "Gemini API servers are currently experiencing high demand (503). Spikes are temporary."
+              : `HTTP ${response.status} Error`),
+          isRateLimit: isRateOrDemand,
         };
       }
 
@@ -193,14 +202,24 @@ export function LiveGeneratorModal({
       return { result: finalResult };
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
-      const is429 =
+      const isRateOrDemand =
         msg.includes("429") ||
         msg.includes("503") ||
+        msg.includes("504") ||
         msg.toLowerCase().includes("quota") ||
         msg.toLowerCase().includes("rate limit") ||
         msg.toLowerCase().includes("high demand") ||
-        msg.toLowerCase().includes("overloaded");
-      return { error: msg, isRateLimit: is429 };
+        msg.toLowerCase().includes("overloaded") ||
+        msg.toLowerCase().includes("network error") ||
+        msg.toLowerCase().includes("failed to fetch") ||
+        msg.toLowerCase().includes("network") ||
+        msg.toLowerCase().includes("fetch");
+      return {
+        error: isRateOrDemand
+          ? "Gemini API demand spike / network blip (503/429). Retrying or providing a personal API key is recommended."
+          : msg,
+        isRateLimit: isRateOrDemand,
+      };
     }
   };
 
@@ -269,7 +288,7 @@ export function LiveGeneratorModal({
           setStatusStep(`Generating initial diagram with ${modelToUse}...`);
         }
 
-        const pass = await executeStreamPass({
+        let pass = await executeStreamPass({
           conceptId: isCustom ? Date.now() : selectedConceptId,
           conceptName: title,
           subject,
@@ -281,6 +300,31 @@ export function LiveGeneratorModal({
           attemptNumber: currentAttempt,
           maxAttempts: maxRetries,
         });
+
+        // Transient network retry: auto-retry once after 1.5s delay if network drop or 503 spike occurs
+        if (pass.error && pass.isRateLimit) {
+          setLiveLogs((prev) => [
+            ...prev,
+            {
+              time: new Date().toLocaleTimeString(),
+              message: `Transient network/demand spike on attempt #${currentAttempt}. Retrying pass in 1.5s...`,
+              type: "warning",
+            },
+          ]);
+          await new Promise((r) => setTimeout(r, 1500));
+          pass = await executeStreamPass({
+            conceptId: isCustom ? Date.now() : selectedConceptId,
+            conceptName: title,
+            subject,
+            promptText,
+            apiKey: apiKey || undefined,
+            model: modelToUse,
+            previousSvg: currentSvg,
+            userFeedback: feedbackForNext,
+            attemptNumber: currentAttempt,
+            maxAttempts: maxRetries,
+          });
+        }
 
         if (pass.error) {
           setErrorMessage(pass.error);
@@ -351,15 +395,24 @@ export function LiveGeneratorModal({
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
-      setErrorMessage(msg);
-      const is429 =
+      const isRateOrDemand =
         msg.includes("429") ||
         msg.includes("503") ||
+        msg.includes("504") ||
         msg.toLowerCase().includes("quota") ||
         msg.toLowerCase().includes("rate limit") ||
         msg.toLowerCase().includes("high demand") ||
-        msg.toLowerCase().includes("overloaded");
-      if (is429) {
+        msg.toLowerCase().includes("overloaded") ||
+        msg.toLowerCase().includes("network error") ||
+        msg.toLowerCase().includes("failed to fetch") ||
+        msg.toLowerCase().includes("network") ||
+        msg.toLowerCase().includes("fetch");
+      setErrorMessage(
+        isRateOrDemand
+          ? "Gemini API demand spike / network blip (503/429). Retrying or providing a personal API key is recommended."
+          : msg
+      );
+      if (isRateOrDemand) {
         setIsRateLimit(true);
       }
     } finally {

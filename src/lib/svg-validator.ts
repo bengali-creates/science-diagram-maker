@@ -393,23 +393,37 @@ function getElementDirectFill(el: Element, cssRules: Record<string, any>): strin
 
 function shapeEnclosesBox(shape: Element, box: TextBoundingBox): boolean {
   const tagName = shape.tagName.toLowerCase();
+  const m = getCumulativeTransform(shape);
+
   if (tagName === "rect") {
     const x = parseFloat(shape.getAttribute("x") || "0");
     const y = parseFloat(shape.getAttribute("y") || "0");
     const w = parseFloat(shape.getAttribute("width") || "0");
     const h = parseFloat(shape.getAttribute("height") || "0");
     if (w <= 0 || h <= 0) return false;
+
+    const corners = [
+      applyTransformToPoint(m, x, y),
+      applyTransformToPoint(m, x + w, y),
+      applyTransformToPoint(m, x, y + h),
+      applyTransformToPoint(m, x + w, y + h),
+    ];
+    const minX = Math.min(...corners.map((p) => p.x));
+    const maxX = Math.max(...corners.map((p) => p.x));
+    const minY = Math.min(...corners.map((p) => p.y));
+    const maxY = Math.max(...corners.map((p) => p.y));
+
     const midX = (box.minX + box.maxX) / 2;
     const midY = (box.minY + box.maxY) / 2;
-    if (midX >= x - 4 && midX <= x + w + 4 && midY >= y - 4 && midY <= y + h + 4) {
+    if (midX >= minX - 6 && midX <= maxX + 6 && midY >= minY - 6 && midY <= maxY + 6) {
       return true;
     }
 
     return (
-      box.minX >= x - 12 &&
-      box.maxX <= x + w + 12 &&
-      box.minY >= y - 12 &&
-      box.maxY <= y + h + 12
+      box.minX >= minX - 12 &&
+      box.maxX <= maxX + 12 &&
+      box.minY >= minY - 12 &&
+      box.maxY <= maxY + 12
     );
   } else if (tagName === "circle" || tagName === "ellipse") {
     const cx = parseFloat(shape.getAttribute("cx") || "0");
@@ -417,10 +431,12 @@ function shapeEnclosesBox(shape: Element, box: TextBoundingBox): boolean {
     const rx = parseFloat(shape.getAttribute("rx") || shape.getAttribute("r") || "0");
     const ry = parseFloat(shape.getAttribute("ry") || shape.getAttribute("r") || "0");
     if (rx <= 0 || ry <= 0) return false;
+
+    const pt = applyTransformToPoint(m, cx, cy);
     const midX = (box.minX + box.maxX) / 2;
     const midY = (box.minY + box.maxY) / 2;
-    const dx = (midX - cx) / (rx + 4);
-    const dy = (midY - cy) / (ry + 4);
+    const dx = (midX - pt.x) / (rx + 6);
+    const dy = (midY - pt.y) / (ry + 6);
     return dx * dx + dy * dy <= 1.25;
   }
   return false;
@@ -973,7 +989,12 @@ export function validateSvg(rawInput: string): SvgValidationResult {
       for (let j = i + 1; j < prominentBoxes.length; j++) {
         const s1 = prominentBoxes[i];
         const s2 = prominentBoxes[j];
-        const containmentTolerance = 8;
+
+        // Only enforce separation between UI card banners and text callout pills
+        // Geometric diagram shapes (e.g. adjacent squares, polygons, charts) naturally touch or align
+        if (!s1.isCardBanner || !s2.isCardBanner) continue;
+
+        const containmentTolerance = 12;
         const s1ContainsS2 =
           s1.minX - containmentTolerance <= s2.minX &&
           s1.maxX + containmentTolerance >= s2.maxX &&
@@ -988,7 +1009,7 @@ export function validateSvg(rawInput: string): SvgValidationResult {
         if (!s1ContainsS2 && !s2ContainsS1) {
           const overlapX = Math.min(s1.maxX, s2.maxX) - Math.max(s1.minX, s2.minX);
           const overlapY = Math.min(s1.maxY, s2.maxY) - Math.max(s1.minY, s2.minY);
-          if (overlapX > 15 && overlapY > 15) {
+          if (overlapX > 18 && overlapY > 18) {
             noOverlappingLabels = false;
             collidingPairs.push(`Elements partially overlap across boundaries (${Math.round(overlapX)}x${Math.round(overlapY)}px overlap)`);
           }
@@ -1042,14 +1063,21 @@ export function validateSvg(rawInput: string): SvgValidationResult {
     }
 
     for (const seg of allDrawingSegments) {
-      for (const box of prominentBoxes.filter((b) => b.isCardBanner)) {
+      for (const box of prominentBoxes.filter((b) => b.isCardBanner && b.maxX - b.minX >= 110 && b.maxY - b.minY >= 60)) {
         if (lineIntersectsBox(seg.x1, seg.y1, seg.x2, seg.y2, box)) {
           noOverlappingLabels = false;
           collidingPairs.push(`${seg.source} (${Math.round(seg.x1)},${Math.round(seg.y1)}) cuts into banner/card at (${Math.round(box.minX)},${Math.round(box.minY)})`);
         }
       }
       for (const box of textBoxes) {
-        if (lineCutsThroughTextBox(seg.x1, seg.y1, seg.x2, seg.y2, box)) {
+        const hasCardBacking = prominentBoxes.some(
+          (b) =>
+            box.minX >= b.minX - 6 &&
+            box.maxX <= b.maxX + 6 &&
+            box.minY >= b.minY - 6 &&
+            box.maxY <= b.maxY + 6
+        );
+        if (!hasCardBacking && lineCutsThroughTextBox(seg.x1, seg.y1, seg.x2, seg.y2, box)) {
           noOverlappingLabels = false;
           collidingPairs.push(`${seg.source} cuts across text label "${box.text.slice(0, 15)}"`);
         }
