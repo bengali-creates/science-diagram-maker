@@ -69,6 +69,7 @@ export interface GenerationRequest {
   model?: string;
   userFeedback?: string;
   previousSvg?: string;
+  stream?: boolean;
 }
 
 export interface GenerationResponse {

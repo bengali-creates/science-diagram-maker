@@ -58,7 +58,9 @@ export function ReviewerRetryModal({
 
   const handleExecuteRetry = async () => {
     if (!critique.trim()) {
-      setErrorMessage("Please enter reviewer instructions describing what the AI should fix.");
+      setErrorMessage(
+        "Please enter reviewer instructions describing what the AI should fix.",
+      );
       return;
     }
 
@@ -109,7 +111,7 @@ export function ReviewerRetryModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md p-4 animate-in fade-in duration-150">
       <div className="relative flex flex-col w-full max-w-2xl rounded-2xl border border-border bg-card text-card-foreground shadow-2xl overflow-hidden">
-        {/* Header */}
+        {}
         <div className="flex items-center justify-between border-b border-border px-6 py-4 bg-muted/40">
           <div className="flex items-center gap-2.5">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary border border-primary/20">
@@ -125,7 +127,8 @@ export function ReviewerRetryModal({
                 </Badge>
               </div>
               <p className="text-xs text-muted-foreground">
-                Give the LLM direct instructions to correct collisions, layouts, or animations
+                Give the LLM direct instructions to correct collisions, layouts,
+                or animations
               </p>
             </div>
           </div>
@@ -138,18 +141,24 @@ export function ReviewerRetryModal({
           </button>
         </div>
 
-        {/* Modal Body */}
+        {}
         <div className="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
-          {/* Target Concept Info */}
+          {}
           <div className="rounded-xl border border-border bg-muted/30 p-3.5 space-y-1">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-foreground">{diagram.concept}</span>
-              <span className="text-[10px] text-muted-foreground">{diagram.subject}</span>
+              <span className="text-xs font-bold text-foreground">
+                {diagram.concept}
+              </span>
+              <span className="text-[10px] text-muted-foreground">
+                {diagram.subject}
+              </span>
             </div>
-            <p className="text-xs text-muted-foreground italic">"{diagram.promptText}"</p>
+            <p className="text-xs text-muted-foreground italic">
+              "{diagram.promptText}"
+            </p>
           </div>
 
-          {/* Quick preset suggestions */}
+          {}
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-foreground flex items-center gap-1.5">
               <Sparkles className="h-3.5 w-3.5 text-primary" />
@@ -170,7 +179,7 @@ export function ReviewerRetryModal({
             </div>
           </div>
 
-          {/* Reviewer instructions box */}
+          {}
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-foreground">
               Reviewer Critique &amp; Instructions to LLM:
@@ -185,7 +194,7 @@ export function ReviewerRetryModal({
             />
           </div>
 
-          {/* Live Progress Stepper during retry */}
+          {}
           {isLoading && (
             <div className="rounded-xl border border-primary/30 bg-primary/5 p-4 space-y-3 animate-in fade-in">
               <div className="flex items-center gap-2 text-xs font-bold text-primary">
@@ -204,7 +213,9 @@ export function ReviewerRetryModal({
                     )}
                     <span
                       className={
-                        i <= currentStep ? "text-foreground font-medium" : "text-muted-foreground/60"
+                        i <= currentStep
+                          ? "text-foreground font-medium"
+                          : "text-muted-foreground/60"
                       }
                     >
                       {st}
@@ -215,19 +226,21 @@ export function ReviewerRetryModal({
             </div>
           )}
 
-          {/* Error Banner */}
+          {}
           {errorMessage && (
             <div className="rounded-xl border border-destructive/40 bg-destructive/10 p-3.5 space-y-1 animate-in fade-in">
               <div className="flex items-center gap-2 text-xs font-bold text-destructive">
                 <AlertTriangle className="h-4 w-4" />
                 <span>Revision Error</span>
               </div>
-              <p className="text-xs text-destructive font-mono">{errorMessage}</p>
+              <p className="text-xs text-destructive font-mono">
+                {errorMessage}
+              </p>
             </div>
           )}
         </div>
 
-        {/* Footer */}
+        {}
         <div className="border-t border-border px-6 py-3.5 bg-muted/40 flex items-center justify-between">
           <span className="text-[11px] text-muted-foreground flex items-center gap-1">
             <History className="h-3.5 w-3.5" />

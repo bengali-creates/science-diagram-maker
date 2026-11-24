@@ -66,9 +66,7 @@ export function DiagramRow({
           origin: { y: 0.7 },
           colors: ["#10b981", "#3b82f6", "#6366f1"],
         });
-      } catch {
-        // ignore if confetti blocked
-      }
+      } catch {}
     }
   };
 
@@ -102,11 +100,11 @@ export function DiagramRow({
           review.status === "approved"
             ? "border-emerald-500/40 bg-card/95 shadow-md shadow-emerald-500/5 ring-1 ring-emerald-500/20"
             : review.status === "rejected"
-            ? "border-destructive/40 bg-card/95 shadow-md shadow-destructive/5 ring-1 ring-destructive/20"
-            : "border-border bg-card/75 hover:border-border/80 shadow-sm"
+              ? "border-destructive/40 bg-card/95 shadow-md shadow-destructive/5 ring-1 ring-destructive/20"
+              : "border-border bg-card/75 hover:border-border/80 shadow-sm"
         }`}
       >
-        {/* Top Banner / Concept Header */}
+        {}
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-5 py-3 bg-muted/40">
           <div className="flex items-center gap-3">
             <span
@@ -123,7 +121,7 @@ export function DiagramRow({
           </div>
 
           <div className="flex items-center gap-2 text-xs">
-            {/* Status Badge */}
+            {}
             {review.status === "approved" && (
               <Badge variant="success" className="gap-1 font-bold">
                 <CheckCircle className="h-3.5 w-3.5" /> Approved
@@ -135,19 +133,23 @@ export function DiagramRow({
               </Badge>
             )}
             {review.status === "pending" && (
-              <Badge variant="outline" className="gap-1 text-muted-foreground font-medium">
+              <Badge
+                variant="outline"
+                className="gap-1 text-muted-foreground font-medium"
+              >
                 <HelpCircle className="h-3 w-3" /> Needs Review
               </Badge>
             )}
 
-            {/* Visual Retry Badge */}
+            {}
             {diagram.retryCount > 0 && (
               <Badge variant="warning" className="gap-1 font-bold">
-                ⚡ {diagram.retryCount} {diagram.retryCount === 1 ? "Auto-Retry" : "Retries"}
+                ⚡ {diagram.retryCount}{" "}
+                {diagram.retryCount === 1 ? "Auto-Retry" : "Retries"}
               </Badge>
             )}
 
-            {/* Request AI Revision Button */}
+            {}
             <Button
               variant="outline"
               size="sm"
@@ -159,7 +161,7 @@ export function DiagramRow({
               <span className="hidden sm:inline">AI Revision</span>
             </Button>
 
-            {/* Replay SVG Animation Button */}
+            {}
             <Button
               variant="outline"
               size="icon"
@@ -170,7 +172,7 @@ export function DiagramRow({
               <RefreshCw className="h-3.5 w-3.5" />
             </Button>
 
-            {/* Fullscreen Inspector Button */}
+            {}
             <Button
               variant="outline"
               size="sm"
@@ -184,9 +186,9 @@ export function DiagramRow({
           </div>
         </div>
 
-        {/* Main Grid: Left Diagram (Animated) & Right Checks/Review */}
+        {}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 p-5">
-          {/* Left Column: Animated SVG Diagram */}
+          {}
           <div className="lg:col-span-6 flex flex-col justify-between">
             <div
               key={svgKey}
@@ -210,9 +212,9 @@ export function DiagramRow({
             </p>
           </div>
 
-          {/* Right Column: Automated Checks, Metrics & Reviewer Station */}
+          {}
           <div className="lg:col-span-6 flex flex-col justify-between space-y-4">
-            {/* Automated Checks Panel */}
+            {}
             <div>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
@@ -237,29 +239,37 @@ export function DiagramRow({
               </div>
             </div>
 
-            {/* Model Metrics & Cost Row */}
+            {}
             <div className="grid grid-cols-3 gap-2 rounded-xl border border-border bg-muted/40 p-2.5 text-xs">
               <div>
-                <span className="text-[10px] text-muted-foreground block">Cost (USD)</span>
+                <span className="text-[10px] text-muted-foreground block">
+                  Cost (USD)
+                </span>
                 <span className="font-mono font-bold text-amber-600 dark:text-amber-400">
                   {formatCost(diagram.costUSD)}
                 </span>
               </div>
               <div>
-                <span className="text-[10px] text-muted-foreground block">Total Tokens</span>
+                <span className="text-[10px] text-muted-foreground block">
+                  Total Tokens
+                </span>
                 <span className="font-mono font-semibold text-foreground">
-                  {diagram.totalTokens} ({diagram.inputTokens} in / {diagram.outputTokens} out)
+                  {diagram.totalTokens} ({diagram.inputTokens} in /{" "}
+                  {diagram.outputTokens} out)
                 </span>
               </div>
               <div>
-                <span className="text-[10px] text-muted-foreground block">Retries</span>
+                <span className="text-[10px] text-muted-foreground block">
+                  Retries
+                </span>
                 <span className="font-semibold text-primary">
-                  {diagram.retryCount} attempt{diagram.retryCount !== 1 ? "s" : ""}
+                  {diagram.retryCount} attempt
+                  {diagram.retryCount !== 1 ? "s" : ""}
                 </span>
               </div>
             </div>
 
-            {/* Reviewer Action Station */}
+            {}
             <div className="rounded-xl border border-border bg-card p-3.5 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-foreground">
@@ -284,7 +294,9 @@ export function DiagramRow({
                 <Button
                   type="button"
                   onClick={handleReject}
-                  variant={review.status === "rejected" ? "destructive" : "outline"}
+                  variant={
+                    review.status === "rejected" ? "destructive" : "outline"
+                  }
                   className="font-bold cursor-pointer"
                 >
                   <X className="h-4 w-4 mr-1" />
@@ -292,7 +304,7 @@ export function DiagramRow({
                 </Button>
               </div>
 
-              {/* Note box */}
+              {}
               <div>
                 <Input
                   type="text"
@@ -304,7 +316,7 @@ export function DiagramRow({
                 />
               </div>
 
-              {/* Collapsible Retry & Audit Trail */}
+              {}
               <div className="pt-1 border-t border-border/60">
                 <button
                   type="button"
@@ -320,7 +332,11 @@ export function DiagramRow({
                       </span>
                     )}
                   </span>
-                  {showAuditTrail ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+                  {showAuditTrail ? (
+                    <ChevronUp className="h-3.5 w-3.5" />
+                  ) : (
+                    <ChevronDown className="h-3.5 w-3.5" />
+                  )}
                 </button>
 
                 <AnimatePresence>
@@ -336,7 +352,8 @@ export function DiagramRow({
                         <span>Total Retries: {diagram.retryCount}</span>
                       </div>
 
-                      {diagram.retryHistory && diagram.retryHistory.length > 0 ? (
+                      {diagram.retryHistory &&
+                      diagram.retryHistory.length > 0 ? (
                         <div className="space-y-1.5 pt-1">
                           {diagram.retryHistory.map((step, idx) => (
                             <div
@@ -345,7 +362,11 @@ export function DiagramRow({
                             >
                               <div className="flex items-center justify-between font-semibold">
                                 <span className="text-foreground">
-                                  Attempt #{step.attemptNumber} ({step.trigger === "auto_validation" ? "Auto Retry" : "Human Revision"})
+                                  Attempt #{step.attemptNumber} (
+                                  {step.trigger === "auto_validation"
+                                    ? "Auto Retry"
+                                    : "Human Revision"}
+                                  )
                                 </span>
                                 <span
                                   className={`font-mono text-[10px] ${
@@ -354,14 +375,17 @@ export function DiagramRow({
                                       : "text-amber-600 dark:text-amber-400"
                                   }`}
                                 >
-                                  {step.checksPassed ? "✓ Checks Passed" : "⚠ Checks Failed"}
+                                  {step.checksPassed
+                                    ? "✓ Checks Passed"
+                                    : "⚠ Checks Failed"}
                                 </span>
                               </div>
-                              {step.failedCheckNames && step.failedCheckNames.length > 0 && (
-                                <p className="mt-1 text-[10px] text-destructive font-mono">
-                                  Failed: {step.failedCheckNames.join(", ")}
-                                </p>
-                              )}
+                              {step.failedCheckNames &&
+                                step.failedCheckNames.length > 0 && (
+                                  <p className="mt-1 text-[10px] text-destructive font-mono">
+                                    Failed: {step.failedCheckNames.join(", ")}
+                                  </p>
+                                )}
                               {step.userCritique && (
                                 <p className="mt-1 text-[10px] text-primary font-medium">
                                   Reviewer Critique: "{step.userCritique}"
@@ -377,7 +401,8 @@ export function DiagramRow({
                         </div>
                       ) : (
                         <p className="text-[10px] text-muted-foreground italic">
-                          Generated directly in initial pass with 6/6 deterministic AST &amp; collision checks satisfied.
+                          Generated directly in initial pass with 6/6
+                          deterministic AST &amp; collision checks satisfied.
                         </p>
                       )}
                     </motion.div>
@@ -389,7 +414,7 @@ export function DiagramRow({
         </div>
       </Card>
 
-      {/* Human AI Revision Dialog */}
+      {}
       <ReviewerRetryModal
         isOpen={isRetryModalOpen}
         onClose={() => setIsRetryModalOpen(false)}

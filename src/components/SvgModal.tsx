@@ -1,7 +1,17 @@
 "use client";
 
 import React, { useState } from "react";
-import { X, ZoomIn, ZoomOut, RotateCcw, Copy, Check, Download, Code, Eye } from "lucide-react";
+import {
+  X,
+  ZoomIn,
+  ZoomOut,
+  RotateCcw,
+  Copy,
+  Check,
+  Download,
+  Code,
+  Eye,
+} from "lucide-react";
 import { DiagramResult } from "@/types";
 import { Button } from "@/components/ui/button";
 
@@ -38,7 +48,7 @@ export function SvgModal({ diagram, onClose }: SvgModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md p-4 animate-in fade-in duration-200">
       <div className="relative flex flex-col h-[90vh] w-full max-w-5xl rounded-2xl border border-border bg-card text-card-foreground shadow-2xl overflow-hidden">
-        {/* Top Header */}
+        {}
         <div className="flex items-center justify-between border-b border-border px-6 py-4 bg-muted/40">
           <div>
             <div className="flex items-center gap-2">
@@ -50,11 +60,13 @@ export function SvgModal({ diagram, onClose }: SvgModalProps) {
                 {diagram.model} ({diagram.totalTokens} tokens)
               </span>
             </div>
-            <h2 className="text-lg font-bold text-foreground">{diagram.concept}</h2>
+            <h2 className="text-lg font-bold text-foreground">
+              {diagram.concept}
+            </h2>
           </div>
 
           <div className="flex items-center gap-2">
-            {/* View Switcher */}
+            {}
             <div className="flex rounded-lg border border-border bg-muted p-1">
               <button
                 onClick={() => setActiveTab("preview")}
@@ -120,7 +132,7 @@ export function SvgModal({ diagram, onClose }: SvgModalProps) {
           </div>
         </div>
 
-        {/* Content Body */}
+        {}
         <div className="relative flex-1 overflow-auto p-6 bg-muted/10 flex items-center justify-center">
           {activeTab === "preview" ? (
             <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-xl border border-border bg-card p-4">
@@ -135,7 +147,7 @@ export function SvgModal({ diagram, onClose }: SvgModalProps) {
                 dangerouslySetInnerHTML={{ __html: diagram.svg }}
               />
 
-              {/* Floating Zoom Controls */}
+              {}
               <div className="absolute bottom-4 right-4 flex items-center gap-1 rounded-xl border border-border bg-card/90 p-1.5 shadow-lg backdrop-blur-md">
                 <Button
                   variant="ghost"
@@ -176,13 +188,26 @@ export function SvgModal({ diagram, onClose }: SvgModalProps) {
           )}
         </div>
 
-        {/* Footer Checks Summary */}
+        {}
         <div className="border-t border-border px-6 py-3 bg-muted/40 flex items-center justify-between text-xs text-muted-foreground">
           <p className="italic max-w-xl truncate">"{diagram.promptText}"</p>
           <div className="flex items-center gap-3">
-            <span>Input: <strong className="text-foreground">{diagram.inputTokens}</strong></span>
-            <span>Output: <strong className="text-foreground">{diagram.outputTokens}</strong></span>
-            <span>Cost: <strong className="text-amber-600 dark:text-amber-400 font-mono">${diagram.costUSD.toFixed(6)}</strong></span>
+            <span>
+              Input:{" "}
+              <strong className="text-foreground">{diagram.inputTokens}</strong>
+            </span>
+            <span>
+              Output:{" "}
+              <strong className="text-foreground">
+                {diagram.outputTokens}
+              </strong>
+            </span>
+            <span>
+              Cost:{" "}
+              <strong className="text-amber-600 dark:text-amber-400 font-mono">
+                ${diagram.costUSD.toFixed(6)}
+              </strong>
+            </span>
           </div>
         </div>
       </div>

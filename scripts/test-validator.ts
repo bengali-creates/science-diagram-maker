@@ -21,7 +21,7 @@ const sampleValidSvg = `
   <rect x="150" y="150" width="100" height="250" fill="#10b981" fill-opacity="0.3" stroke="#059669" stroke-width="2" class="animated-box" />
   <!-- Labels -->
   <text x="380" y="430" font-family="sans-serif" font-size="16" fill="#1e293b">Side a (adjacent)</text>
-  <text x="210" y="275" font-family="sans-serif" font-size="16" fill="#1e293b">Side b (opposite)</text>
+  <text x="70" y="275" font-family="sans-serif" font-size="16" fill="#1e293b">Side b (opposite)</text>
   <text x="420" y="260" font-family="sans-serif" font-size="16" fill="#1e293b">Hypotenuse c</text>
   <text x="250" y="520" font-family="sans-serif" font-size="20" font-weight="bold" fill="#0f172a">a² + b² = c²</text>
 </svg>

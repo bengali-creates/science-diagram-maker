@@ -42,10 +42,6 @@ export const SCIENCE_CONCEPTS: ConceptDefinition[] = [
       "In a solid the particles are close together and vibrate in place. In a liquid they are close but move past each other. In a gas they are far apart and move fast.",
   },
 ];
-
-// Gemini Pricing Reference (Free tier / Pay-as-you-go reference rate for Gemini Flash)
-// Input: $0.075 per 1,000,000 tokens ($0.000000075 / token)
-// Output: $0.30 per 1,000,000 tokens ($0.00000030 / token)
 export const GEMINI_FLASH_INPUT_COST_PER_TOKEN = 0.075 / 1_000_000;
 export const GEMINI_FLASH_OUTPUT_COST_PER_TOKEN = 0.3 / 1_000_000;
 
