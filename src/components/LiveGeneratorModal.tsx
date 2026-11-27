@@ -300,8 +300,7 @@ export function LiveGeneratorModal({
           attemptNumber: currentAttempt,
           maxAttempts: maxRetries,
         });
-
-        // Transient network retry: auto-retry once after 1.5s delay if network drop or 503 spike occurs
+        
         if (pass.error && pass.isRateLimit) {
           setLiveLogs((prev) => [
             ...prev,
